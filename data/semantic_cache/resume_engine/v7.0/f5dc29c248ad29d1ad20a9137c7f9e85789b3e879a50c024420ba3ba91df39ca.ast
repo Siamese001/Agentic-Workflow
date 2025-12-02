@@ -1,0 +1,113 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v7.0\\run_batch_v7_0.py",
+    "file_hash": "f5dc29c248ad29d1ad20a9137c7f9e85789b3e879a50c024420ba3ba91df39ca",
+    "size_bytes": 8315,
+    "last_modified": "2025-12-01T12:27:42.206001",
+    "engine": "RG",
+    "archive_version": "v7.0",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "get_compiled_graph",
+      "line_number": 55,
+      "docstring": "Initializes the graph and checkpointer *within* a new process.\nThis is critical for ProcessPoolExecutor.",
+      "imports": [],
+      "dependencies": [
+        "RedisSaver",
+        "get_graph_app"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "process_single_job",
+      "line_number": 72,
+      "docstring": "Wraps the execution of a single job for the parallel executor.\nReturns a dictionary for the summary CSV.",
+      "imports": [],
+      "dependencies": [
+        "load_job_input",
+        "len",
+        "Exception",
+        "get_compiled_graph",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_batch",
+      "line_number": 161,
+      "docstring": "Main batch processing loop.\nProcesses all .json files in batch_queue/ directory in parallel.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "run_meta_learning",
+        "open",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "os": [
+      "line_11"
+    ],
+    "csv": [
+      "line_12"
+    ],
+    "json": [
+      "line_13"
+    ],
+    "logging": [
+      "line_14"
+    ],
+    "shutil": [
+      "line_15"
+    ],
+    "concurrent.futures": [
+      "line_16"
+    ],
+    "uuid": [
+      "line_17"
+    ],
+    "from_datetime": [
+      "line_18"
+    ],
+    "from_typing": [
+      "line_19"
+    ],
+    "from_main_v7_0": [
+      "line_22"
+    ],
+    "from_core_v7_0": [
+      "line_23"
+    ],
+    "from_agent_swarm_v7_0": [
+      "line_26"
+    ],
+    "from_langgraph.checkpoint.redis": [
+      "line_27"
+    ],
+    "from_run_learning_v7_0": [
+      "line_31"
+    ]
+  },
+  "function_signatures": {
+    "get_compiled_graph": "get_compiled_graph",
+    "process_single_job": "process_single_job",
+    "run_batch": "run_batch"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 21,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

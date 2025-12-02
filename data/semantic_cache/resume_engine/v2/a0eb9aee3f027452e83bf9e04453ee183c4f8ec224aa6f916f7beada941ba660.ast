@@ -1,0 +1,486 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\utils_RES_v2.py",
+    "file_hash": "a0eb9aee3f027452e83bf9e04453ee183c4f8ec224aa6f916f7beada941ba660",
+    "size_bytes": 22025,
+    "last_modified": "2025-12-01T12:27:37.039060",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "create_directory_if_missing",
+      "line_number": 52,
+      "docstring": "Creates a directory if it doesn't exist.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sanitize_filename",
+      "line_number": 58,
+      "docstring": "Sanitizes a filename by removing or replacing invalid characters.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowLogFilter",
+      "line_number": 74,
+      "docstring": "Log filter to add workflow_id to log records.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_workflow_logging",
+      "line_number": 85,
+      "docstring": "Set up logging for the workflow with both console and file handlers.\n\nArgs:\n    workflow_id: Optional workflow identifier\n    log_file_path: Specific path for the log file\n    test_mode: If True, disable file logging\n    \nReturns:\n    Tuple of (logger, log_filename)",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "WorkflowLogFilter"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TextUtils",
+      "line_number": 147,
+      "docstring": "Utilities for text processing, counting, and manipulation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DuplicateDetector",
+      "line_number": 367,
+      "docstring": "Detects duplicate or near-duplicate text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal_score",
+      "line_number": 418,
+      "docstring": "Calculates a 'signal score' based on theme and keyword presence.\nThis was referenced by validator_RES_v2.py but was missing.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "min",
+        "len",
+        "getattr"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TelemetryLogger",
+      "line_number": 471,
+      "docstring": "Logs telemetry data to a structured JSONL file for analysis.\nThis is a stub implementation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "reasoning_config_to_api_params",
+      "line_number": 501,
+      "docstring": "Converts a ReasoningConfig dataclass into API parameters.\n(This is a stub, as the full logic depends on the specific API)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "enhance_system_prompt_with_reasoning",
+      "line_number": 527,
+      "docstring": "Enhances a system prompt with reasoning directives based on the config.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "get_directive"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_generation_prompt_with_reinforced_constraints",
+      "line_number": 573,
+      "docstring": "Enhances a base prompt with reinforced constraints for retries.\nThis was referenced by artist_RES_v2.py but was missing.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 76,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "filter",
+      "line_number": 80,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "count_sentences",
+      "line_number": 151,
+      "docstring": "Counts the number of sentences in a text.\nUses simple heuristic: split on '.', '!', '?'",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "count_words",
+      "line_number": 162,
+      "docstring": "Counts words in text using simple whitespace split.\nMore accurate than regex for most resume text.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "count_words_ms_word_style",
+      "line_number": 172,
+      "docstring": "Counts words similar to MS Word:\n- Split on whitespace\n- Count hyphenated words as one word",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract_first_n_words",
+      "line_number": 185,
+      "docstring": "Extracts the first N words from text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "truncate_to_word_count",
+      "line_number": 191,
+      "docstring": "Truncates text to a maximum word count, preserving whole words.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "strip_markdown_fences",
+      "line_number": 199,
+      "docstring": "Removes markdown code fences from text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "normalize_whitespace",
+      "line_number": 208,
+      "docstring": "Normalizes whitespace in text (collapses multiple spaces/newlines).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "remove_extra_newlines",
+      "line_number": 215,
+      "docstring": "Removes excess consecutive newlines.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "is_valid_sentence_start",
+      "line_number": 221,
+      "docstring": "Checks if text starts with a valid sentence beginning.\nInvalid starts: \"At \", \"As \", \"In \", \"The \", \"This \"",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "remove_forbidden_sentence_starts",
+      "line_number": 230,
+      "docstring": "Removes forbidden sentence starts and recapitalizes.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract_keywords",
+      "line_number": 249,
+      "docstring": "Extracts significant keywords from text.\nFilters out common stop words and short words.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_similarity",
+      "line_number": 277,
+      "docstring": "Calculates cosine similarity between two texts using TF-IDF.\nReturns a score between 0.0 and 1.0.\nRequires scikit-learn.",
+      "imports": [],
+      "dependencies": [
+        "cosine_similarity",
+        "float",
+        "TfidfVectorizer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "remove_conversational_fillers",
+      "line_number": 301,
+      "docstring": "Removes common conversational filler phrases from the start of text.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "remove_trailing_explanations",
+      "line_number": 323,
+      "docstring": "Removes trailing 'Note:' or 'I have ensured...' meta-commentary.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sanitize_text",
+      "line_number": 330,
+      "docstring": "Runs a single string through all sanitization rules.\n(Merged from sanitizer_RES_v2.py)",
+      "imports": [],
+      "dependencies": [
+        "defaultdict",
+        "isinstance",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 370,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "TfidfVectorizer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "find_duplicates_in_list",
+      "line_number": 374,
+      "docstring": "Finds duplicates within a list of strings.\n\nArgs:\n    texts: List of text strings\n    \nReturns:\n    List of tuples (text1, text2, similarity_score) for duplicates",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "cosine_similarity",
+        "len",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 476,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log",
+      "line_number": 482,
+      "docstring": "Logs a telemetry event.",
+      "imports": [],
+      "dependencies": [
+        "asdict",
+        "type",
+        "hasattr",
+        "str",
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_directive",
+      "line_number": 539,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "hashlib": [
+      "line_13"
+    ],
+    "json": [
+      "line_14"
+    ],
+    "logging": [
+      "line_15"
+    ],
+    "os": [
+      "line_16"
+    ],
+    "re": [
+      "line_17"
+    ],
+    "subprocess": [
+      "line_18"
+    ],
+    "uuid": [
+      "line_19"
+    ],
+    "from_collections": [
+      "line_20"
+    ],
+    "from_datetime": [
+      "line_21"
+    ],
+    "from_typing": [
+      "line_22"
+    ],
+    "from_models_RES": [
+      "line_41"
+    ],
+    "from_config_RES_v2": [
+      "line_43"
+    ],
+    "google.generativeai": [
+      "line_25"
+    ],
+    "from_sklearn.feature_extraction.text": [
+      "line_32"
+    ],
+    "from_sklearn.metrics.pairwise": [
+      "line_33"
+    ]
+  },
+  "function_signatures": {
+    "create_directory_if_missing": "create_directory_if_missing",
+    "sanitize_filename": "sanitize_filename",
+    "setup_workflow_logging": "setup_workflow_logging",
+    "calculate_signal_score": "calculate_signal_score",
+    "reasoning_config_to_api_params": "reasoning_config_to_api_params",
+    "enhance_system_prompt_with_reasoning": "enhance_system_prompt_with_reasoning",
+    "build_generation_prompt_with_reinforced_constraints": "build_generation_prompt_with_reinforced_constraints",
+    "__init__": "__init__",
+    "filter": "filter",
+    "count_sentences": "count_sentences",
+    "count_words": "count_words",
+    "count_words_ms_word_style": "count_words_ms_word_style",
+    "extract_first_n_words": "extract_first_n_words",
+    "truncate_to_word_count": "truncate_to_word_count",
+    "strip_markdown_fences": "strip_markdown_fences",
+    "normalize_whitespace": "normalize_whitespace",
+    "remove_extra_newlines": "remove_extra_newlines",
+    "is_valid_sentence_start": "is_valid_sentence_start",
+    "remove_forbidden_sentence_starts": "remove_forbidden_sentence_starts",
+    "extract_keywords": "extract_keywords",
+    "calculate_similarity": "calculate_similarity",
+    "remove_conversational_fillers": "remove_conversational_fillers",
+    "remove_trailing_explanations": "remove_trailing_explanations",
+    "sanitize_text": "sanitize_text",
+    "find_duplicates_in_list": "find_duplicates_in_list",
+    "log": "log",
+    "get_directive": "get_directive"
+  },
+  "class_signatures": {
+    "WorkflowLogFilter": "WorkflowLogFilter",
+    "TextUtils": "TextUtils",
+    "DuplicateDetector": "DuplicateDetector",
+    "TelemetryLogger": "TelemetryLogger"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 58,
+    "cognitive_complexity": 44,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

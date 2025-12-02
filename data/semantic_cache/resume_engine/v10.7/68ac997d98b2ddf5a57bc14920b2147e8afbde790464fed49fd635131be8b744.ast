@@ -1,0 +1,67 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\system\\test_integration_v10_7.py",
+    "file_hash": "68ac997d98b2ddf5a57bc14920b2147e8afbde790464fed49fd635131be8b744",
+    "size_bytes": 681,
+    "last_modified": "2025-12-01T12:27:37.232417",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_parallel_branch_merge",
+      "line_number": 6,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "run_workflow"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_hil_trigger_on_ambiguity",
+      "line_number": 13,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "run_workflow"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_placeholder",
+      "line_number": 23,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_1"
+    ],
+    "from_workflow.runner": [
+      "line_2"
+    ]
+  },
+  "function_signatures": {
+    "test_parallel_branch_merge": "test_parallel_branch_merge",
+    "test_hil_trigger_on_ambiguity": "test_hil_trigger_on_ambiguity",
+    "test_placeholder": "test_placeholder"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

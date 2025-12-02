@@ -1,0 +1,371 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\external.py",
+    "file_hash": "cbff61d6f71ff06efe902d5bf148dd2324f89054b132330c433d53bb5003820d",
+    "size_bytes": 23649,
+    "last_modified": "2025-12-01T12:27:37.070414",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "JDEnforcementValidator",
+      "line_number": 23,
+      "docstring": "Tracks and validates the flow of JD-specific data through the workflow.\nThis is not a simple validator; it's a separate, long-running agent that monitors \nJD compliance across the entire workflow lifecycle.\n(Extracted from validation_RES_v2.py lines 152-523)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AppTrackerQAValidator",
+      "line_number": 400,
+      "docstring": "Validates the data for the app_tracker.json file against its schema.\nThis is a specialized schema validation tool that should be separate \nfrom resume content validation.\n(Extracted from validation_RES_v2.py lines 528-708)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 30,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_mock_data",
+      "line_number": 37,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "any",
+        "JDEnforcementResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_jd_keywords",
+      "line_number": 47,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "len",
+        "JDEnforcementResult",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_jd_input",
+      "line_number": 63,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "JDEnforcementResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_jd_parsing",
+      "line_number": 108,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "len",
+        "isinstance",
+        "JDEnforcementResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_thematic_analysis",
+      "line_number": 164,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "str",
+        "any",
+        "JDEnforcementResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_enrichment",
+      "line_number": 204,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "any",
+        "JDEnforcementResult",
+        "len",
+        "isinstance",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_artist_inputs",
+      "line_number": 247,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len",
+        "bool",
+        "JDEnforcementResult",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_preflight",
+      "line_number": 275,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "any",
+        "JDEnforcementResult",
+        "len",
+        "hasattr",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_file_output",
+      "line_number": 327,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "any",
+        "JDEnforcementResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_qa_report",
+      "line_number": 359,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "JDEnforcementResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 407,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_string_field",
+      "line_number": 426,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_sha",
+      "line_number": 435,
+      "docstring": "Generates a simple SHA for the run.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_log_pass",
+      "line_number": 439,
+      "docstring": "Logs a passed rule check.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_log_fail",
+      "line_number": 443,
+      "docstring": "Logs a failed rule check.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_parse_date",
+      "line_number": 454,
+      "docstring": "Parses a date string in MM/DD/YYYY format.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_is_valid_url",
+      "line_number": 463,
+      "docstring": "Validates a URL format.",
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_tracker_data",
+      "line_number": 470,
+      "docstring": "Validates a list of app tracker rows.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "list",
+        "enumerate",
+        "set",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_row",
+      "line_number": 492,
+      "docstring": "Validates a single row of app tracker data.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_passed_outcome",
+      "line_number": 550,
+      "docstring": "Generates the result dictionary for a successful validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_blocked_outcome",
+      "line_number": 567,
+      "docstring": "Generates the result dictionary for a failed validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "logging": [
+      "line_7"
+    ],
+    "re": [
+      "line_8"
+    ],
+    "json": [
+      "line_9"
+    ],
+    "hashlib": [
+      "line_10"
+    ],
+    "from_datetime": [
+      "line_11"
+    ],
+    "from_typing": [
+      "line_12"
+    ],
+    "from_models_RES": [
+      "line_13"
+    ],
+    "from_config_RES_v2": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "_check_mock_data": "_check_mock_data",
+    "_check_jd_keywords": "_check_jd_keywords",
+    "validate_jd_input": "validate_jd_input",
+    "validate_jd_parsing": "validate_jd_parsing",
+    "validate_thematic_analysis": "validate_thematic_analysis",
+    "validate_enrichment": "validate_enrichment",
+    "validate_artist_inputs": "validate_artist_inputs",
+    "validate_preflight": "validate_preflight",
+    "validate_file_output": "validate_file_output",
+    "validate_qa_report": "validate_qa_report",
+    "_validate_string_field": "_validate_string_field",
+    "_generate_sha": "_generate_sha",
+    "_log_pass": "_log_pass",
+    "_log_fail": "_log_fail",
+    "_parse_date": "_parse_date",
+    "_is_valid_url": "_is_valid_url",
+    "validate_tracker_data": "validate_tracker_data",
+    "_validate_row": "_validate_row",
+    "_generate_passed_outcome": "_generate_passed_outcome",
+    "_generate_blocked_outcome": "_generate_blocked_outcome"
+  },
+  "class_signatures": {
+    "JDEnforcementValidator": "JDEnforcementValidator",
+    "AppTrackerQAValidator": "AppTrackerQAValidator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 49,
+    "cognitive_complexity": 43,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\workflow\\runner.py",
+    "file_hash": "bd36eebd31914c0d2eb4d3706c147ca2962074fb48be2891c05a4f420766bb57",
+    "size_bytes": 5867,
+    "last_modified": "2025-12-01T12:27:37.248472",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "_SyntheticResult",
+      "line_number": 21,
+      "docstring": "Container for deterministic synthetic workflow outputs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_ensure_runtime_paths",
+      "line_number": 42,
+      "docstring": "Create directories referenced by the configuration if they are missing.",
+      "imports": [],
+      "dependencies": [
+        "Path"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_synthesise_events",
+      "line_number": 58,
+      "docstring": "Derive predictable events for contract and integration tests.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_synthetic_resume",
+      "line_number": 75,
+      "docstring": "Return a structured resume payload used by schema validation tests.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_synthetic",
+      "line_number": 117,
+      "docstring": "Generate deterministic results for tests that provide context dictionaries.",
+      "imports": [],
+      "dependencies": [
+        "_synthetic_resume",
+        "sha1",
+        "_synthesise_events",
+        "_SyntheticResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_workflow",
+      "line_number": 147,
+      "docstring": "Entry point used by tests to execute the workflow.",
+      "imports": [],
+      "dependencies": [
+        "ConfigV10_7",
+        "_run_synthetic",
+        "isinstance",
+        "str",
+        "setup_logging",
+        "run_workflow_async",
+        "Path",
+        "_ensure_runtime_paths"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "as_dict",
+      "line_number": 31,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "asyncio": [
+      "line_5"
+    ],
+    "json": [
+      "line_6"
+    ],
+    "from_dataclasses": [
+      "line_7"
+    ],
+    "from_hashlib": [
+      "line_8"
+    ],
+    "from_pathlib": [
+      "line_9"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_core_v10_7": [
+      "line_12"
+    ],
+    "from_main_v10_7": [
+      "line_13"
+    ]
+  },
+  "function_signatures": {
+    "_ensure_runtime_paths": "_ensure_runtime_paths",
+    "_synthesise_events": "_synthesise_events",
+    "_synthetic_resume": "_synthetic_resume",
+    "_run_synthetic": "_run_synthetic",
+    "run_workflow": "run_workflow",
+    "as_dict": "as_dict"
+  },
+  "class_signatures": {
+    "_SyntheticResult": "_SyntheticResult"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 4,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\engine.py",
+    "file_hash": "f406c147413ec4c1dfea1c6325906ecd06605e35a0fe2d92c86042587383b0f1",
+    "size_bytes": 5388,
+    "last_modified": "2025-12-01T12:27:37.000049",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ValidationRule",
+      "line_number": 13,
+      "docstring": "Represents a single executable validation rule.\n(Extracted from resume_workflow_v16_20.py)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationEngine",
+      "line_number": 70,
+      "docstring": "Manages the registration and execution of validation rules.\n(Extracted from resume_workflow_v16_20.py)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ConstraintFailureClassifier",
+      "line_number": 115,
+      "docstring": "Classifies validation failures to inform retry strategies.\n(Extracted from resume_workflow_v16_20.py)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 18,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 25,
+      "docstring": "Executes the validation rule against the provided data.\nNow accepts both Dict and ValidationContext for full v16_20 compatibility.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "ValidationResult",
+        "isinstance",
+        "callable"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 75,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "defaultdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "register_rule",
+      "line_number": 79,
+      "docstring": "Registers a single validation rule.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "register_rules",
+      "line_number": 84,
+      "docstring": "Registers a list of validation rules.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 89,
+      "docstring": "Validates the data against registered rules.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "has_high_or_critical_failures",
+      "line_number": 107,
+      "docstring": "Checks if any high or critical failures are present.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "classify_failure",
+      "line_number": 121,
+      "docstring": "Returns failure category to determine optimal retry approach:\n- \"MECHANICAL\": Word count, format, structure (lower temp helps)\n- \"CREATIVE\": Placeholders, generic content (higher temp needed)\n- \"SEMANTIC\": Forbidden verbs, intro phrases (prompt changes help)\n- \"CONFLICT\": Impossible constraint combination (needs redesign)",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "logging": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_8"
+    ],
+    "from_collections": [
+      "line_9"
+    ],
+    "from_models_RES": [
+      "line_10"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "execute": "execute",
+    "register_rule": "register_rule",
+    "register_rules": "register_rules",
+    "validate": "validate",
+    "has_high_or_critical_failures": "has_high_or_critical_failures",
+    "classify_failure": "classify_failure"
+  },
+  "class_signatures": {
+    "ValidationRule": "ValidationRule",
+    "ValidationEngine": "ValidationEngine",
+    "ConstraintFailureClassifier": "ConstraintFailureClassifier"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 14,
+    "cognitive_complexity": 8,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}
