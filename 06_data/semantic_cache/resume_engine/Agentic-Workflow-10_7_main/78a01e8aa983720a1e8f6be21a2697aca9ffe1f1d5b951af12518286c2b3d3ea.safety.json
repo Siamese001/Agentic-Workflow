@@ -1,0 +1,11 @@
+{
+  "safety_checks": [
+    "input_validation"
+  ],
+  "policy_compliance": [],
+  "security_patterns": [],
+  "data_handling": [
+    "sensitive_data"
+  ],
+  "access_controls": []
+}

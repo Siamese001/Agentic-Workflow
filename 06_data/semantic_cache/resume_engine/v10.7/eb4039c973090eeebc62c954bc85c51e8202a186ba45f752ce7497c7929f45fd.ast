@@ -1,0 +1,687 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\services.py",
+    "file_hash": "eb4039c973090eeebc62c954bc85c51e8202a186ba45f752ce7497c7929f45fd",
+    "size_bytes": 44591,
+    "last_modified": "2025-12-01T12:27:37.451099",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ContextBudgetManager",
+      "line_number": 39,
+      "docstring": "v10.7 (Fix #14): Manages context window limits using agentic pruning.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetricsCollector",
+      "line_number": 128,
+      "docstring": "v10.7: In-memory collector for agent/tool observability.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "track_metrics",
+      "line_number": 171,
+      "docstring": "v10.7: Decorator for agent/tool run/run_async methods.",
+      "imports": [],
+      "dependencies": [
+        "func",
+        "dict",
+        "wraps",
+        "hasattr",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SemanticValidator",
+      "line_number": 250,
+      "docstring": "v10.7: Local, deterministic validation service.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptTemplateManager",
+      "line_number": 383,
+      "docstring": "v10.7: Manages all 30+ system prompts.\nFIXED: Prompts updated for Cognitive Modes, Goal State, and Failure Injection.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResponseValidator",
+      "line_number": 571,
+      "docstring": "v10.7: Central utility to parse and validate LLM JSON.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FeedbackEntry",
+      "line_number": 639,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FeedbackLogReader",
+      "line_number": 648,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ProposedRule",
+      "line_number": 689,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ProposedRulesLoader",
+      "line_number": 698,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CacheManager",
+      "line_number": 746,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CostTracker",
+      "line_number": 911,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 43,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_estimate_tokens",
+      "line_number": 53,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_prune_truncate",
+      "line_number": 103,
+      "docstring": "v10.7: Simple truncation fallback.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 130,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record",
+      "line_number": 140,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_summary",
+      "line_number": 158,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_average_latency",
+      "line_number": 161,
+      "docstring": "v10.7 (Fix #15): Gets average latency for a specific task.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "decorator",
+      "line_number": 173,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "func",
+        "dict",
+        "wraps",
+        "hasattr",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 252,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check_word_count",
+      "line_number": 256,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "abs",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_ensure_mapping",
+      "line_number": 299,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_serialize",
+      "line_number": 306,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 389,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_top_failures",
+      "line_number": 397,
+      "docstring": "v10.7 (Fix #24): Analyzes feedback log for top failure patterns.",
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_template",
+      "line_number": 412,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_load_templates",
+      "line_number": 427,
+      "docstring": "v10.7 (Fix #17, #20): Defines all system prompts using Cognitive Modes.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 573,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_json",
+      "line_number": 576,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 592,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "issubclass",
+        "JSONParsingError",
+        "isinstance",
+        "type",
+        "str",
+        "PydanticSchemaError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 649,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_read_log_lines",
+      "line_number": 656,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "open",
+        "FeedbackEntry"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "read_recent_feedback",
+      "line_number": 676,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_failures",
+      "line_number": 679,
+      "docstring": "v10.7 (Fix #24): Gets recent failure events.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 699,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_rules",
+      "line_number": 705,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ProposedRule",
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_constitution_rules",
+      "line_number": 737,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 747,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_llm_cache_key",
+      "line_number": 774,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_tool_cache_key",
+      "line_number": 778,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_tool_cache",
+      "line_number": 864,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "log_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set_tool_cache",
+      "line_number": 885,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_stats",
+      "line_number": 894,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 918,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_cost",
+      "line_number": 921,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_provider_name",
+      "line_number": 924,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_call",
+      "line_number": 929,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_cost_summary",
+      "line_number": 938,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sync_wrapper",
+      "line_number": 213,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "func",
+        "dict",
+        "wraps",
+        "hasattr",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "asyncio": [
+      "line_5"
+    ],
+    "hashlib": [
+      "line_6"
+    ],
+    "json": [
+      "line_7"
+    ],
+    "logging": [
+      "line_8"
+    ],
+    "os": [
+      "line_9"
+    ],
+    "random": [
+      "line_10"
+    ],
+    "time": [
+      "line_11"
+    ],
+    "from_dataclasses": [
+      "line_12"
+    ],
+    "from_datetime": [
+      "line_13"
+    ],
+    "from_functools": [
+      "line_14"
+    ],
+    "from_typing": [
+      "line_15"
+    ],
+    "from_chromadb.utils": [
+      "line_17"
+    ],
+    "from_pydantic": [
+      "line_18"
+    ],
+    "from_telemetry_v10_7": [
+      "line_20"
+    ],
+    "from_config": [
+      "line_22"
+    ],
+    "from_constants": [
+      "line_23"
+    ],
+    "from_exceptions": [
+      "line_24"
+    ],
+    "from_models": [
+      "line_25"
+    ],
+    "from_clients": [
+      "line_28"
+    ],
+    "from_redis": [
+      "line_29"
+    ],
+    "from_chromadb": [
+      "line_30"
+    ]
+  },
+  "function_signatures": {
+    "track_metrics": "track_metrics",
+    "__init__": "__init__",
+    "_estimate_tokens": "_estimate_tokens",
+    "_prune_truncate": "_prune_truncate",
+    "record": "record",
+    "get_summary": "get_summary",
+    "get_average_latency": "get_average_latency",
+    "decorator": "decorator",
+    "check_word_count": "check_word_count",
+    "_ensure_mapping": "_ensure_mapping",
+    "_serialize": "_serialize",
+    "_get_top_failures": "_get_top_failures",
+    "get_template": "get_template",
+    "_load_templates": "_load_templates",
+    "_extract_json": "_extract_json",
+    "validate": "validate",
+    "_read_log_lines": "_read_log_lines",
+    "read_recent_feedback": "read_recent_feedback",
+    "get_failures": "get_failures",
+    "load_rules": "load_rules",
+    "get_constitution_rules": "get_constitution_rules",
+    "_generate_llm_cache_key": "_generate_llm_cache_key",
+    "_generate_tool_cache_key": "_generate_tool_cache_key",
+    "get_tool_cache": "get_tool_cache",
+    "set_tool_cache": "set_tool_cache",
+    "get_stats": "get_stats",
+    "log_cost": "log_cost",
+    "_get_provider_name": "_get_provider_name",
+    "record_call": "record_call",
+    "get_cost_summary": "get_cost_summary",
+    "sync_wrapper": "sync_wrapper"
+  },
+  "class_signatures": {
+    "ContextBudgetManager": "ContextBudgetManager",
+    "MetricsCollector": "MetricsCollector",
+    "SemanticValidator": "SemanticValidator",
+    "PromptTemplateManager": "PromptTemplateManager",
+    "ResponseValidator": "ResponseValidator",
+    "FeedbackEntry": "FeedbackEntry",
+    "FeedbackLogReader": "FeedbackLogReader",
+    "ProposedRule": "ProposedRule",
+    "ProposedRulesLoader": "ProposedRulesLoader",
+    "CacheManager": "CacheManager",
+    "CostTracker": "CostTracker"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 77,
+    "cognitive_complexity": 46,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

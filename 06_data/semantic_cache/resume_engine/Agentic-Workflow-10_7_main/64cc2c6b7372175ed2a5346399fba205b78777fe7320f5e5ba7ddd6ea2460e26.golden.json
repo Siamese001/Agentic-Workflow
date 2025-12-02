@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Synthetic draft simulator.\"\"\"\nimport random\nfrom typing import Any, Dict\nfrom simulations.models.draft_simulation import (\nDraftSimMetrics,\nDraftSimRequest,\nDraftSimResult,\n)\nfrom simulations.utils import model_to_payload\nclass DraftSimulator:\n\"\"\"Simulates draft-level properties.\"\"\"\nasync def run(self, request: DraftSimRequest) -> DraftSimResult:\nsection_count = len(request.draft_sections)\nentropy = round(random.uniform(0.2, 0.9), 3)\ncohesion = round(max(0.0, min(1.0, 0.5 + section_count * 0.05 + random.uniform(-0.2, 0.3))), 3)\nrhythm_score = round(random.uniform(0.3, 0.95), 3)\nmetrics = DraftSimMetrics(entropy=entropy, cohesion=cohesion, rhythm_score=rhythm_score)\npreview: Dict[str, Any] = {}\nif request.draft_sections:\nfirst_key = next(iter(request.draft_sections))\npreview = {first_key: request.draft_sections[first_key]}\nreturn DraftSimResult(\nsimulation_id=request.simulation_id,\nsuccess=True,\nmetrics=model_to_payload(metrics),\ndetails={\"section_preview\": preview},\n)",
+  "normalized_signature": "class:DraftSimulator",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

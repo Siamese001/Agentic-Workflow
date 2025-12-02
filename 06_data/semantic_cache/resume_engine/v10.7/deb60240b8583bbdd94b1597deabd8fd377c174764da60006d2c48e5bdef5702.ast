@@ -1,0 +1,18 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\mcp.manifest.json",
+    "file_hash": "deb60240b8583bbdd94b1597deabd8fd377c174764da60006d2c48e5bdef5702",
+    "size_bytes": 750,
+    "last_modified": "2025-12-01T12:27:37.357389",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".json"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "file_type": "non_python"
+  }
+}

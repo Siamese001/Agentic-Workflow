@@ -1,0 +1,183 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\shared\\test_utils.py",
+    "file_hash": "1594a6f8d67362e6bd59fc233ff75ee9ea079806b8d5eba7c59c7040730635c3",
+    "size_bytes": 2681,
+    "last_modified": "2025-12-01T12:27:41.924743",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "install_langgraph_stub",
+      "line_number": 12,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_configure",
+      "line_number": 49,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_addoption",
+      "line_number": 54,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_loop",
+      "line_number": 64,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_pyfunc_call",
+      "line_number": 73,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_run_loop",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_collection_modifyitems",
+      "line_number": 84,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StateGraph",
+      "line_number": 19,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GraphRecursionError",
+      "line_number": 37,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_node",
+      "line_number": 23,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set_entry_point",
+      "line_number": 26,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_edge",
+      "line_number": 29,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "asyncio": [
+      "line_3"
+    ],
+    "contextlib": [
+      "line_4"
+    ],
+    "sys": [
+      "line_5"
+    ],
+    "types": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "pytest": [
+      "line_9"
+    ]
+  },
+  "function_signatures": {
+    "install_langgraph_stub": "install_langgraph_stub",
+    "pytest_configure": "pytest_configure",
+    "pytest_addoption": "pytest_addoption",
+    "_run_loop": "_run_loop",
+    "pytest_pyfunc_call": "pytest_pyfunc_call",
+    "pytest_collection_modifyitems": "pytest_collection_modifyitems",
+    "__init__": "__init__",
+    "add_node": "add_node",
+    "set_entry_point": "set_entry_point",
+    "add_edge": "add_edge"
+  },
+  "class_signatures": {
+    "StateGraph": "StateGraph",
+    "GraphRecursionError": "GraphRecursionError"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 8,
+    "cognitive_complexity": 4,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

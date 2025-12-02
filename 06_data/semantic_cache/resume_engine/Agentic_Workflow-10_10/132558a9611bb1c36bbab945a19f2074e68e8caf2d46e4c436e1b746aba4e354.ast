@@ -1,0 +1,216 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\prompt_system_v10_10.py",
+    "file_hash": "132558a9611bb1c36bbab945a19f2074e68e8caf2d46e4c436e1b746aba4e354",
+    "size_bytes": 9546,
+    "last_modified": "2025-12-01T15:36:20.795773",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "PromptActorRole",
+      "line_number": 36,
+      "docstring": "Logical actors that may interact with the prompt registry.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptACL",
+      "line_number": 47,
+      "docstring": "Simple role-based ACL for a single prompt ID.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_acl",
+      "line_number": 69,
+      "docstring": "Enforce PromptACL for the given role and use_case.\n\nuse_case:\n    - \"read\"  \u2192 viewing the definition\n    - \"edit\"  \u2192 modifying / registering the definition\n    - \"use\"   \u2192 using in ENGINE (runtime)",
+      "imports": [],
+      "dependencies": [
+        "PermissionError",
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "register_prompt",
+      "line_number": 108,
+      "docstring": "Register or update a prompt definition in the global registry.\n\nSide-effects:\n    \u2022 PROMPT_REGISTRY[defn.id] is updated.\n    \u2022 PROMPT_ACLS[defn.id] is set if acl given or not present.",
+      "imports": [],
+      "dependencies": [
+        "PromptACL"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_prompt",
+      "line_number": 123,
+      "docstring": "Retrieve a PromptDefinition by id with ACL enforcement.",
+      "imports": [],
+      "dependencies": [
+        "_check_acl",
+        "KeyError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_prompt_acl",
+      "line_number": 137,
+      "docstring": "Retrieve the PromptACL for a given prompt id, or None if not set.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptDiff",
+      "line_number": 149,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "diff_prompts",
+      "line_number": 157,
+      "docstring": "Compute a simple diff between two PromptDefinitions for the same id.",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "PromptDiff"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_prompt_definition",
+      "line_number": 173,
+      "docstring": "Basic validation for a single PromptDefinition.\n\nRaises ValueError on structural issues (used by tests / CI).",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "list_prompt_ids",
+      "line_number": 185,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_acl_meta",
+      "line_number": 194,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_seed_core_prompts",
+      "line_number": 204,
+      "docstring": "Seed minimal core prompts for the v10_10 stack.\n\nAll templates follow the simple pattern:\n\n    \"## CONTEXT\\n\\n## INSTRUCTIONS\\n\\n## OUTPUT_FORMAT\\n\"\n\nThe richer envelope sections (Framing, Reasoning, Safety) are added\nby prompt_builder at runtime.",
+      "imports": [],
+      "dependencies": [
+        "PromptVersion",
+        "_acl_meta",
+        "_pd",
+        "register_prompt",
+        "PromptDefinition",
+        "validate_prompt_definition"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_pd",
+      "line_number": 217,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "PromptDefinition",
+        "_acl_meta"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_21"
+    ],
+    "from_enum": [
+      "line_23"
+    ],
+    "from_typing": [
+      "line_24"
+    ],
+    "from_pydantic": [
+      "line_26"
+    ],
+    "from_models": [
+      "line_28"
+    ]
+  },
+  "function_signatures": {
+    "_check_acl": "_check_acl",
+    "register_prompt": "register_prompt",
+    "get_prompt": "get_prompt",
+    "get_prompt_acl": "get_prompt_acl",
+    "diff_prompts": "diff_prompts",
+    "validate_prompt_definition": "validate_prompt_definition",
+    "list_prompt_ids": "list_prompt_ids",
+    "_acl_meta": "_acl_meta",
+    "_seed_core_prompts": "_seed_core_prompts",
+    "_pd": "_pd"
+  },
+  "class_signatures": {
+    "PromptActorRole": "PromptActorRole",
+    "PromptACL": "PromptACL",
+    "PromptDiff": "PromptDiff"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 18,
+    "cognitive_complexity": 16,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

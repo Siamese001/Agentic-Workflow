@@ -1,0 +1,343 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\conftest.py",
+    "file_hash": "705fe15c4667f27fb4036d301c280b93a028ed99964f46da08fd7cc97c3c071a",
+    "size_bytes": 5005,
+    "last_modified": "2025-12-01T12:27:37.158754",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "InMemoryRedis",
+      "line_number": 38,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FakeCollection",
+      "line_number": 46,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FakeChromaClient",
+      "line_number": 59,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DummyEmbeddingFunction",
+      "line_number": 65,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "config",
+      "line_number": 77,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ConfigV10_7"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "cache_manager",
+      "line_number": 81,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "FakeCollection",
+        "FakeChromaClient",
+        "CacheManager",
+        "DummyEmbeddingFunction",
+        "InMemoryRedis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "workflow_context",
+      "line_number": 89,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "WorkflowContext",
+        "FakeCollection",
+        "FakeChromaClient",
+        "CacheManager",
+        "ProposedRulesLoader",
+        "SemanticValidator",
+        "ContextBudgetManager",
+        "MetricsCollector",
+        "ResponseValidator",
+        "DummyEmbeddingFunction",
+        "CostTracker",
+        "FeedbackLogReader",
+        "InMemoryRedis",
+        "PromptTemplateManager"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "benchmark",
+      "line_number": 116,
+      "docstring": "Lightweight stand-in for pytest-benchmark's fixture.",
+      "imports": [],
+      "dependencies": [
+        "func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StateGraph",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GraphRecursionError",
+      "line_number": 28,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setex",
+      "line_number": 41,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 43,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 47,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add",
+      "line_number": 49,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "zip"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "query",
+      "line_number": 52,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 60,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_or_create_collection",
+      "line_number": 62,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__call__",
+      "line_number": 66,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_runner",
+      "line_number": 119,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 16,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_node",
+      "line_number": 18,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set_entry_point",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_edge",
+      "line_number": 22,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "asyncio": [
+      "line_1"
+    ],
+    "sys": [
+      "line_1"
+    ],
+    "types": [
+      "line_1"
+    ],
+    "pytest": [
+      "line_1"
+    ],
+    "from_pathlib": [
+      "line_2"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_core_v10_7": [
+      "line_70"
+    ]
+  },
+  "function_signatures": {
+    "config": "config",
+    "cache_manager": "cache_manager",
+    "workflow_context": "workflow_context",
+    "benchmark": "benchmark",
+    "__init__": "__init__",
+    "setex": "setex",
+    "get": "get",
+    "add": "add",
+    "query": "query",
+    "get_or_create_collection": "get_or_create_collection",
+    "__call__": "__call__",
+    "_runner": "_runner",
+    "add_node": "add_node",
+    "set_entry_point": "set_entry_point",
+    "add_edge": "add_edge"
+  },
+  "class_signatures": {
+    "InMemoryRedis": "InMemoryRedis",
+    "FakeCollection": "FakeCollection",
+    "FakeChromaClient": "FakeChromaClient",
+    "DummyEmbeddingFunction": "DummyEmbeddingFunction",
+    "StateGraph": "StateGraph",
+    "GraphRecursionError": "GraphRecursionError"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 3,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

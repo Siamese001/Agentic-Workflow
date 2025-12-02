@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from enum import Enum\nclass GateDecision(Enum):\nHALT = \"HALT\" # Or any other value you want to assign\nCONTINUE = \"CONTINUE\" # Or any other value you want to assign",
+  "normalized_signature": "class:GateDecision",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

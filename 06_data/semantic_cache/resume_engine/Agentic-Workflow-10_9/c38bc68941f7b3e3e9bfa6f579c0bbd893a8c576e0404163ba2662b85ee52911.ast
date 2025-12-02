@@ -1,0 +1,806 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\models.py",
+    "file_hash": "c38bc68941f7b3e3e9bfa6f579c0bbd893a8c576e0404163ba2662b85ee52911",
+    "size_bytes": 23620,
+    "last_modified": "2025-12-01T12:27:36.888626",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "NodeStatus",
+      "line_number": 47,
+      "docstring": "Execution status for nodes / steps / tasks.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowPhase",
+      "line_number": 55,
+      "docstring": "Global workflow phase, aligned with orchestration phase machine.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SelfCorrectionSurface",
+      "line_number": 66,
+      "docstring": "Surfaces for self-correction / recovery decisions.\n\nThese surfaces are used by L3 orchestrators, self_correction, and\nmeta-learning to decide how to adapt behavior over time.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DictBacked",
+      "line_number": 89,
+      "docstring": "Base class that wraps a Python dict but provides:\n\n    \u2022 attribute-style access\n    \u2022 defensive copying\n    \u2022 .get(), .update()\n    \u2022 .to_dict()\n    \u2022 deep_clone()\n\nThis is intentionally flexible for L1 cognition, which builds\nrich plan dictionaries that may evolve over time. Downstream\nlayers should convert into typed payloads where appropriate.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PlanObject",
+      "line_number": 150,
+      "docstring": "Describes the full L1 cognitive plan for L2 execution and L3\norchestration.\n\nExamples of required / common fields (depending on mode):\n\n    \u2022 layer: \"l1\"\n    \u2022 mode:  \"strategy\" | \"rag\" | \"drafting\" | \"bullets\" |\n             \"qa\" | \"safety\" | \"hil\" | \"meta_learning\" |\n             \"prompt_engineering\"\n\n    \u2022 objective: str\n    \u2022 branches / steps / checks / rules / surfaces\n    \u2022 handoff: {\n          \"target_layer\": \"l2\",\n          \"preferred_executor\": \"...\",\n          \"expected_deliverables\": [...]\n      }\n    \u2022 injection_framing / injection_reasoning\n    \u2022 safety_metadata\n    \u2022 compatibility hints (e.g., \"compat_mode\": \"10_7\")\n\nPlanObject remains dict-backed for flexibility, but L2/L3 should\nconvert into typed payloads when needed.",
+      "imports": [],
+      "dependencies": [
+        "DictBacked"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyBranch",
+      "line_number": 199,
+      "docstring": "Single strategy branch produced by L1 planning and realized by L2.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyExecutionPayload",
+      "line_number": 213,
+      "docstring": "Execution payload for strategy executors.\n\nTypically returned as ExecutionResult.payload for \"strategy\".",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGDocument",
+      "line_number": 242,
+      "docstring": "Single document/evidence item surfaced by a RAG executor.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGExternalStats",
+      "line_number": 254,
+      "docstring": "Metadata-only payload describing external/vector RAG behavior.\n\nUsed for observability and optimization, not for direct user output.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGExecutionPayload",
+      "line_number": 272,
+      "docstring": "Execution payload for retrieval executors.\n\nTypically returned as ExecutionResult.payload for \"rag\".",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletExecutionPayload",
+      "line_number": 299,
+      "docstring": "Execution payload for bullet generation.\n\nTypically returned as ExecutionResult.payload for \"bullets\".",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftExecutionPayload",
+      "line_number": 320,
+      "docstring": "Execution payload for drafting.\n\nTypically returned as ExecutionResult.payload for \"drafting\".",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAFinding",
+      "line_number": 341,
+      "docstring": "Single QA check result.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAReport",
+      "line_number": 351,
+      "docstring": "Aggregated QA report.\n\nUsed by L2 QAExecutor and higher layers.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAExecutionPayload",
+      "line_number": 369,
+      "docstring": "Execution payload for QA validation.\n\nTypically returned as ExecutionResult.payload for \"qa\".",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyIssue",
+      "line_number": 388,
+      "docstring": "Single safety issue detected by safety evaluators.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyReport",
+      "line_number": 400,
+      "docstring": "Aggregated safety report.\n\nUsed both by L2 SafetyExecutor and L5 SafetyEngine.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyExecutionPayload",
+      "line_number": 424,
+      "docstring": "Execution payload for safety evaluators.\n\nTypically returned as ExecutionResult.payload for \"safety\".",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILPrompt",
+      "line_number": 443,
+      "docstring": "Structured representation of a HIL question to a human reviewer.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILResponse",
+      "line_number": 452,
+      "docstring": "Structured response captured from a human reviewer.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILExecutionPayload",
+      "line_number": 462,
+      "docstring": "Execution payload for HIL interactions.\n\nTypically returned as ExecutionResult.payload for \"hil\".",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetaLearningFinding",
+      "line_number": 485,
+      "docstring": "Single pattern / hypothesis extracted from logs or prior runs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetaLearningSnapshot",
+      "line_number": 495,
+      "docstring": "Aggregated meta-learning snapshot summarizing a run of the\nmeta-learning graph.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetaLearningExecutionPayload",
+      "line_number": 510,
+      "docstring": "Execution payload for meta-learning passes.\n\nTypically attached to state under a meta_learning block.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiAgentVote",
+      "line_number": 529,
+      "docstring": "Single agent vote within a council.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiAgentCouncilResult",
+      "line_number": 540,
+      "docstring": "Aggregate result of a multi-agent council vote.\n\nUsed by meta-layer and L3/L5 as advisory input.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ArbitrationDecision",
+      "line_number": 564,
+      "docstring": "Normalized arbitration decision outcome used by L3/L5.\n\n    action: \"proceed\" | \"retry_l2\" | \"rerun_l1\" | \"halt\" | \"escalate\"\n    reason: short, deterministic explanation\n    metadata: arbitrary additional metadata (e.g. mode, safety report)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CheckpointInfo",
+      "line_number": 586,
+      "docstring": "Summary of a persisted checkpoint for recovery and replay.\n\nThis is metadata-only and does not contain full state blobs; those\nare left to the underlying persistence system.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RouteTraceEntry",
+      "line_number": 610,
+      "docstring": "Route trace metadata for routing decisions or node executions.\n\nUsed by L3 for observability.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CorrectionJournalEntry",
+      "line_number": 625,
+      "docstring": "Single entry in a correction journal used by L3/L4/L5/meta-learning.\n\nThis provides a unified way to track self-correction signals across runs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ExecutionResult",
+      "line_number": 647,
+      "docstring": "Normalized deterministic output for all L2 executors.\n\nFields:\n    \u2022 status:  \"success\" | \"error\" | \"skipped\" | ...\n    \u2022 payload: domain-specific object (dict OR typed dataclass)\n    \u2022 errors:  list of error strings\n    \u2022 model:   logical executor/model label\n    \u2022 usage:   token/cost/latency metrics\n    \u2022 metadata: arbitrary metadata (e.g. domain, surfaces)\n\nExecutionResult.ok is True for status == \"success\" and no errors.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowState",
+      "line_number": 699,
+      "docstring": "Final output of the L3 orchestrator for a single execution pass.\n\nFields:\n    \u2022 workflow_id:  str\n    \u2022 phase:        WorkflowPhase\n    \u2022 node_statuses: mapping `node_name -> NodeStatus`\n    \u2022 summary:      short string summary of the run (complete/failed)\n    \u2022 result:       full state dict (L4 adapter state)\n    \u2022 errors:       list of errors encountered across nodes\n    \u2022 trace_id:     optional trace id\n    \u2022 metadata:     additional orchestration metadata",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StatePatch",
+      "line_number": 730,
+      "docstring": "Minimal, key-scoped state patch used by L4.StateAdapter.\n\nIn v10_9, StateAdapter.apply_patch expects:\n\n    StatePatch(key=<top_level_key>, value=<replacement_or_partial_dict>)\n\nSemantics:\n    \u2022 If both existing state[key] and patch.value are dicts,\n      we perform a shallow merge.\n    \u2022 If both are lists, we append.\n    \u2022 Else, we replace the top-level key entirely.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TraceSpan",
+      "line_number": 755,
+      "docstring": "Lightweight representation of a timing span for observability.\n\nThis is used only for typed observability payloads and is distinct\nfrom the runtime_utils telemetry implementation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PhaseMetadata",
+      "line_number": 772,
+      "docstring": "Metadata describing phase transitions for a workflow.\n\nThis can be embedded under WorkflowState.metadata if desired.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 104,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getattr__",
+      "line_number": 109,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "type",
+        "AttributeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__setattr__",
+      "line_number": 114,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getitem__",
+      "line_number": 119,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__setitem__",
+      "line_number": 122,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 125,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update",
+      "line_number": 128,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 133,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "deep_clone",
+      "line_number": 136,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "type"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__repr__",
+      "line_number": 141,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "type"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 177,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "copy",
+      "line_number": 180,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "PlanObject"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 229,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 267,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 284,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 310,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 331,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 364,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 378,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 413,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 433,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 472,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 505,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 519,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 553,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 577,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 599,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "ok",
+      "line_number": 670,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 673,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__repr__",
+      "line_number": 689,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 767,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 783,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_34"
+    ],
+    "from_dataclasses": [
+      "line_36"
+    ],
+    "from_typing": [
+      "line_37"
+    ],
+    "copy": [
+      "line_38"
+    ],
+    "enum": [
+      "line_39"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "__getattr__": "__getattr__",
+    "__setattr__": "__setattr__",
+    "__getitem__": "__getitem__",
+    "__setitem__": "__setitem__",
+    "get": "get",
+    "update": "update",
+    "to_dict": "to_dict",
+    "deep_clone": "deep_clone",
+    "__repr__": "__repr__",
+    "copy": "copy",
+    "ok": "ok"
+  },
+  "class_signatures": {
+    "NodeStatus": "NodeStatus",
+    "WorkflowPhase": "WorkflowPhase",
+    "SelfCorrectionSurface": "SelfCorrectionSurface",
+    "DictBacked": "DictBacked",
+    "PlanObject": "PlanObject",
+    "StrategyBranch": "StrategyBranch",
+    "StrategyExecutionPayload": "StrategyExecutionPayload",
+    "RAGDocument": "RAGDocument",
+    "RAGExternalStats": "RAGExternalStats",
+    "RAGExecutionPayload": "RAGExecutionPayload",
+    "BulletExecutionPayload": "BulletExecutionPayload",
+    "DraftExecutionPayload": "DraftExecutionPayload",
+    "QAFinding": "QAFinding",
+    "QAReport": "QAReport",
+    "QAExecutionPayload": "QAExecutionPayload",
+    "SafetyIssue": "SafetyIssue",
+    "SafetyReport": "SafetyReport",
+    "SafetyExecutionPayload": "SafetyExecutionPayload",
+    "HILPrompt": "HILPrompt",
+    "HILResponse": "HILResponse",
+    "HILExecutionPayload": "HILExecutionPayload",
+    "MetaLearningFinding": "MetaLearningFinding",
+    "MetaLearningSnapshot": "MetaLearningSnapshot",
+    "MetaLearningExecutionPayload": "MetaLearningExecutionPayload",
+    "MultiAgentVote": "MultiAgentVote",
+    "MultiAgentCouncilResult": "MultiAgentCouncilResult",
+    "ArbitrationDecision": "ArbitrationDecision",
+    "CheckpointInfo": "CheckpointInfo",
+    "RouteTraceEntry": "RouteTraceEntry",
+    "CorrectionJournalEntry": "CorrectionJournalEntry",
+    "ExecutionResult": "ExecutionResult",
+    "WorkflowState": "WorkflowState",
+    "StatePatch": "StatePatch",
+    "TraceSpan": "TraceSpan",
+    "PhaseMetadata": "PhaseMetadata"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 3,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\strategy_sim.py",
+    "file_hash": "1751d351ad7124d62f0fdc1420a6cc20c8f032815b44625bfdc05a4f34c33f4f",
+    "size_bytes": 1099,
+    "last_modified": "2025-12-01T12:27:41.117454",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "StrategySimulator",
+      "line_number": 14,
+      "docstring": "Runs a lightweight strategy simulation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "random": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_4"
+    ],
+    "from_simulations.models.strategy_simulation": [
+      "line_6"
+    ],
+    "from_simulations.utils": [
+      "line_11"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "StrategySimulator": "StrategySimulator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\performance\\test_sla_latency_v10_7.py",
+    "file_hash": "7d451b3fcf96ab11b3e8268581e671ec80ffdc8d66fae1e78c7814726f535692",
+    "size_bytes": 661,
+    "last_modified": "2025-12-01T12:27:37.200940",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_batch_performance",
+      "line_number": 6,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "benchmark",
+        "run_workflow"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_latency_under_3s",
+      "line_number": 13,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "benchmark",
+        "run_workflow"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_retry_context_emits_retry_event",
+      "line_number": 19,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "run_workflow"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_1"
+    ],
+    "from_workflow.runner": [
+      "line_2"
+    ]
+  },
+  "function_signatures": {
+    "test_batch_performance": "test_batch_performance",
+    "test_latency_under_3s": "test_latency_under_3s",
+    "test_retry_context_emits_retry_event": "test_retry_context_emits_retry_event"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

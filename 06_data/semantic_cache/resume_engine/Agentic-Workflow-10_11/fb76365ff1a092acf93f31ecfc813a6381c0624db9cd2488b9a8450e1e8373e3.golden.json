@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nJudge engine for r\u00e9sum\u00e9 processing safety verdict generation.\nProvides deterministic safety evaluation for comprehensive r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\nfrom typing import Any, Dict\nfrom .decisions import JudgeVerdict, RulesEngineResult\nfrom .models import SafetyContext\ndef evaluate_with_guard_model(\ncontext: SafetyContext,\nrules_result: RulesEngineResult,\n) -> JudgeVerdict:\n\"\"\"\nEvaluates r\u00e9sum\u00e9 processing safety with deterministic guard model.\nProvides structured safety assessment for comprehensive r\u00e9sum\u00e9 enhancement operations.\n\"\"\"\nsignals: Dict[str, Any] = {\n\"max_severity\": rules_result.max_severity,\n\"match_count\": len(rules_result.matches),\n\"has_pii\": rules_result.has_pii,\n}\nmax_sev = (rules_result.max_severity or \"\").lower()\nif max_sev == \"high\":\nreturn JudgeVerdict(\nverdict=\"unsafe\",\nexplanation=\"High-severity safety rules matched in deterministic guard.\",\nsignals=signals,\n)\nif max_sev == \"medium\" or rules_result.has_pii:\nreturn JudgeVerdict(\nverdict=\"ambiguous\",\nexplanation=\"Medium-severity or PII-related signals detected; recommend revision.\",\nsignals=signals,\n)\nreturn JudgeVerdict(\nverdict=\"safe\",\nexplanation=\"No significant safety rule matches detected.\",\nsignals=signals,\n)",
+  "normalized_signature": "func:evaluate_with_guard_model",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:evaluate_with_guard_model",
+  "test_coverage": []
+}

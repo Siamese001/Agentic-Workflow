@@ -1,0 +1,242 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\10_7_consolidated\\v10_7_runtime.py",
+    "file_hash": "d719a92f54ee73d6cc18a42cd16af3e14dc09bfafaf30f53ce3662536f946ba1",
+    "size_bytes": 11641,
+    "last_modified": "2025-12-01T12:27:42.169417",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "MetaGraphState",
+      "line_number": 36,
+      "docstring": "v10.7: Meta-learning graph state.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_read_log_tail",
+      "line_number": 50,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "open",
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_count_feedback_entries",
+      "line_number": 60,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "_read_log_tail"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "LogReaderAgent",
+      "line_number": 67,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AsyncLogSummarizerAgent",
+      "line_number": 80,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BatchFeedbackAggregator",
+      "line_number": 120,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_logging",
+      "line_number": 219,
+      "docstring": "Configure logging, now accepts a config object.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_job_input",
+      "line_number": 224,
+      "docstring": "Load job input JSON",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 260,
+      "docstring": "Main CLI entry point",
+      "imports": [],
+      "dependencies": [
+        "setup_logging",
+        "ConfigV10_7",
+        "run_workflow_async"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 38,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 68,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_read_log_tail"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 121,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_job_result",
+      "line_number": 122,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_batch_summary",
+      "line_number": 123,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_5"
+    ],
+    "asyncio": [
+      "line_6"
+    ],
+    "json": [
+      "line_7"
+    ],
+    "logging": [
+      "line_8"
+    ],
+    "os": [
+      "line_9"
+    ],
+    "uuid": [
+      "line_10"
+    ],
+    "sys": [
+      "line_11"
+    ],
+    "csv": [
+      "line_12"
+    ],
+    "shutil": [
+      "line_13"
+    ],
+    "from_datetime": [
+      "line_14"
+    ],
+    "from_typing": [
+      "line_15"
+    ],
+    "from_functools": [
+      "line_16"
+    ],
+    "from_v10_7_foundations": [
+      "line_20"
+    ],
+    "from_v10_7_orchestration": [
+      "line_26"
+    ],
+    "from_v10_7_execution": [
+      "line_27"
+    ]
+  },
+  "function_signatures": {
+    "_read_log_tail": "_read_log_tail",
+    "_count_feedback_entries": "_count_feedback_entries",
+    "setup_logging": "setup_logging",
+    "load_job_input": "load_job_input",
+    "main": "main",
+    "__init__": "__init__",
+    "run": "run",
+    "add_job_result": "add_job_result",
+    "get_batch_summary": "get_batch_summary"
+  },
+  "class_signatures": {
+    "MetaGraphState": "MetaGraphState",
+    "LogReaderAgent": "LogReaderAgent",
+    "AsyncLogSummarizerAgent": "AsyncLogSummarizerAgent",
+    "BatchFeedbackAggregator": "BatchFeedbackAggregator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 12,
+    "cognitive_complexity": 8,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

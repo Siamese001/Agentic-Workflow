@@ -1,0 +1,18 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\production_inputs\\master_resume.json",
+    "file_hash": "77d04406fe217599970adfc5e2977b068c3917c9afe28ae897c18da8576238e4",
+    "size_bytes": 13944,
+    "last_modified": "2025-12-01T12:27:36.946652",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".json"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "file_type": "non_python"
+  }
+}

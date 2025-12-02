@@ -1,0 +1,19 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_l1_l2_l3_core.py",
+    "file_hash": "30c80010a26f01cc3221de530133f8529b1cba609bac71226a1c821d9ff5c060",
+    "size_bytes": 132374,
+    "last_modified": "2025-12-01T12:27:36.222310",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_8_core",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "error": "syntax_error",
+    "line": 27
+  }
+}

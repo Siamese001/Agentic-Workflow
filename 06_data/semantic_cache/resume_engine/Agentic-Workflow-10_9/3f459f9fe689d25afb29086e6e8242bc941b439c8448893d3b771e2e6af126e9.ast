@@ -1,0 +1,253 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\l2.py",
+    "file_hash": "3f459f9fe689d25afb29086e6e8242bc941b439c8448893d3b771e2e6af126e9",
+    "size_bytes": 36598,
+    "last_modified": "2025-12-01T12:27:36.890458",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ExecutionAgent",
+      "line_number": 90,
+      "docstring": "Abstract base class for all L2 executors.\n\nEach executor is responsible for exactly ONE domain:\n\n    \u2022 StrategyExecutor           \u2192 \"strategy\"\n    \u2022 RAGExecutor                \u2192 \"rag\"\n    \u2022 BulletExecutor             \u2192 \"bullets\"\n    \u2022 DraftingExecutor           \u2192 \"drafting\"\n    \u2022 QAExecutor                 \u2192 \"qa\"\n    \u2022 SafetyExecutor             \u2192 \"safety\"\n    \u2022 PromptEngineeringExecutor  \u2192 \"prompt_engineering\"\n    \u2022 HILExecutor                \u2192 \"hil\"\n    \u2022 MetaLearningExecutor       \u2192 \"meta_learning\"\n\nThis satisfies the Agentic constraint that each agent owns at most\none\u2013two capabilities and keeps domains well-separated.",
+      "imports": [],
+      "dependencies": [
+        "ABC"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyExecutor",
+      "line_number": 133,
+      "docstring": "Execute a strategy plan by selecting a branch and returning a\nStrategyExecutionPayload.\n\nL1 supplies:\n    plan[\"branches\"]            (list of strategy branches)\n    plan[\"complexity\"]          (complexity hint)\n    plan[\"reasoning_strategy\"]  (CoT / ToT hint)\n    plan[\"planning_hints\"]      (QA/safety/context/optimization hints)\n\nThis executor focuses on:\n    \u2022 Normalizing strategy branches into StrategyBranch objects.\n    \u2022 Selecting a primary branch deterministically (or by hints).\n    \u2022 Exposing metadata for multi-agent councils and self-correction surfaces.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGExecutor",
+      "line_number": 205,
+      "docstring": "Execute a RAG plan:\n\n    \u2022 Interpret plan[\"retrieval\"] (queries, filters, ranking, metadata).\n    \u2022 Simulate HYDE-like synthetic evidence and base evidence.\n    \u2022 Normalize documents.\n    \u2022 Run BM25/dense/hybrid ranking.\n    \u2022 Apply retrieval reranking and fusion.\n    \u2022 Return a RAGExecutionPayload.\n\nMETA-aware behavior:\n\n    \u2022 routing_bias.prefer_fast \u2192 reduce HYDE and evidence volume.\n    \u2022 routing_bias.prefer_robust_retrieval \u2192 emphasize HYDE and hybrid ranking.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletExecutor",
+      "line_number": 335,
+      "docstring": "Generate bullets based on the bullet framework in the plan and state.\n\nRestores v10_8 bullet behavior:\n\n    \u2022 Action\u2013Metric\u2013Outcome pattern.\n    \u2022 Seniority scaling.\n    \u2022 Metric hints from resume.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftingExecutor",
+      "line_number": 415,
+      "docstring": "Convert a drafting plan into multi-section narrative content.\n\nL1 provides:\n    \u2022 sections\n    \u2022 tone\n    \u2022 audience\n    \u2022 key_messages\n    \u2022 risks\n\nMETA-aware behavior:\n\n    \u2022 planning_bias.conservative \u2192 slightly more cautious/explicit text.\n    \u2022 routing_bias.prefer_fast  \u2192 shorter drafts.\n    \u2022 qa_bias.recent_failures  \u2192 emphasize clarity and structure.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_qa_checks",
+      "line_number": 524,
+      "docstring": "Deterministic QA checks based on plan[\"checks\"].",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAExecutor",
+      "line_number": 550,
+      "docstring": "Execute a QA plan:\n\n    \u2022 Use plan[\"checks\"] to decide which QA checks to run.\n    \u2022 Inspect content from state[\"draft_result\"].\n    \u2022 Produce a QAReport and wrap it in QAExecutionPayload.\n\nMETA-aware behavior:\n\n    \u2022 qa_bias.recent_failures \u2192 keep \"recent_failures\" flag for downstream.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_sanitize_pii",
+      "line_number": 624,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_scan_forbidden_terms",
+      "line_number": 632,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_toxicity_score",
+      "line_number": 638,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyExecutor",
+      "line_number": 647,
+      "docstring": "Execute a safety plan:\n\n    \u2022 Use checks/rules in plan to control which checks to run.\n    \u2022 Evaluate content (usually draft_result) for PII, forbidden terms, toxicity.\n    \u2022 Return a SafetyExecutionPayload (report).\n\nMETA-aware behavior:\n\n    \u2022 safety_bias.heightened_caution \u2192 lower thresholds, more sensitive.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptEngineeringExecutor",
+      "line_number": 741,
+      "docstring": "Convert a PromptEngineering plan into prompt envelope metadata.\n\nThis executor does NOT render actual prompts; that is done by the\ndedicated prompt module and higher-level orchestration. Here we\nsimply normalize the plan into a metadata payload suitable for\nconsumption by the prompt layer.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILExecutor",
+      "line_number": 791,
+      "docstring": "Execute a HIL plan:\n\n    \u2022 Create an HILPrompt using the plan's question_template and\n      contextual state.\n    \u2022 Optionally attach an existing HILResponse if present in state.\n\nThis executor does NOT interface with a real human; an external\nsystem handles that and writes back the HILResponse.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetaLearningExecutor",
+      "line_number": 852,
+      "docstring": "Execute a meta-learning plan:\n\n    \u2022 Inspect QA, safety, and HIL results.\n    \u2022 Convert them into MetaLearningFinding objects.\n    \u2022 Emit a MetaLearningSnapshot used by L4/L5 for cross-run learning.\n\nThis restores v10_8's cross-run learning behavior conceptually\nwhile keeping the implementation deterministic and local.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_once",
+      "line_number": 240,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "float",
+        "str",
+        "int",
+        "len",
+        "RAGExternalStats",
+        "list",
+        "RAGDocument"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_41"
+    ],
+    "asyncio": [
+      "line_43"
+    ],
+    "re": [
+      "line_44"
+    ],
+    "from_abc": [
+      "line_45"
+    ],
+    "from_typing": [
+      "line_46"
+    ],
+    "from_models": [
+      "line_48"
+    ],
+    "from_exceptions": [
+      "line_72"
+    ],
+    "from_retrieval": [
+      "line_73"
+    ],
+    "from_ranking": [
+      "line_74"
+    ],
+    "from_meta_profile": [
+      "line_75"
+    ]
+  },
+  "function_signatures": {
+    "_run_qa_checks": "_run_qa_checks",
+    "_sanitize_pii": "_sanitize_pii",
+    "_scan_forbidden_terms": "_scan_forbidden_terms",
+    "_toxicity_score": "_toxicity_score",
+    "_run_once": "_run_once"
+  },
+  "class_signatures": {
+    "ExecutionAgent": "ExecutionAgent",
+    "StrategyExecutor": "StrategyExecutor",
+    "RAGExecutor": "RAGExecutor",
+    "BulletExecutor": "BulletExecutor",
+    "DraftingExecutor": "DraftingExecutor",
+    "QAExecutor": "QAExecutor",
+    "SafetyExecutor": "SafetyExecutor",
+    "PromptEngineeringExecutor": "PromptEngineeringExecutor",
+    "HILExecutor": "HILExecutor",
+    "MetaLearningExecutor": "MetaLearningExecutor"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 73,
+    "cognitive_complexity": 58,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

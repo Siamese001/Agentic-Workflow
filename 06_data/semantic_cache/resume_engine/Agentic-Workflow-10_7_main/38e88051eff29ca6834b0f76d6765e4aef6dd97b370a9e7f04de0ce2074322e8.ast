@@ -1,0 +1,72 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\strategy_simulation.py",
+    "file_hash": "38e88051eff29ca6834b0f76d6765e4aef6dd97b370a9e7f04de0ce2074322e8",
+    "size_bytes": 707,
+    "last_modified": "2025-12-01T12:27:41.222865",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "StrategySimRequest",
+      "line_number": 10,
+      "docstring": "Input payload for strategy simulation.",
+      "imports": [],
+      "dependencies": [
+        "SimulationInput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategySimMetrics",
+      "line_number": 18,
+      "docstring": "Metrics produced by a strategy simulation.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategySimResult",
+      "line_number": 27,
+      "docstring": "Result model for strategy simulations.",
+      "imports": [],
+      "dependencies": [
+        "SimulationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_3"
+    ],
+    "from_pydantic": [
+      "line_5"
+    ],
+    "from_simulation_base": [
+      "line_7"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "StrategySimRequest": "StrategySimRequest",
+    "StrategySimMetrics": "StrategySimMetrics",
+    "StrategySimResult": "StrategySimResult"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

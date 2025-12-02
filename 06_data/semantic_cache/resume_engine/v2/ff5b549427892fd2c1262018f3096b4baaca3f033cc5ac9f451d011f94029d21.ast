@@ -1,0 +1,93 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\enricher_RES_v2.py",
+    "file_hash": "ff5b549427892fd2c1262018f3096b4baaca3f033cc5ac9f451d011f94029d21",
+    "size_bytes": 3082,
+    "last_modified": "2025-12-01T12:27:36.997790",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DataEnricher",
+      "line_number": 16,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 19,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "DuplicateDetector",
+        "AttributeError",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_canonicalize_verbs",
+      "line_number": 30,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "enrich",
+      "line_number": 37,
+      "docstring": "Enrich extracted data with additional metadata.\nReturns: (enriched_data, validation_results)",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "logging": [
+      "line_4"
+    ],
+    "from_typing": [
+      "line_5"
+    ],
+    "from_models_RES": [
+      "line_7"
+    ],
+    "from_config_RES_v2": [
+      "line_9"
+    ],
+    "from_utils_RES_v2": [
+      "line_11"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "_canonicalize_verbs": "_canonicalize_verbs",
+    "enrich": "enrich"
+  },
+  "class_signatures": {
+    "DataEnricher": "DataEnricher"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 5,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

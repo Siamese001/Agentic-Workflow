@@ -1,0 +1,529 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\rag_RES_v2.py",
+    "file_hash": "e9abca961a08f9e36ee8b566a6f1ca93e47863f70fb9b03c404a3e1ba553aa43",
+    "size_bytes": 53610,
+    "last_modified": "2025-12-01T12:27:37.028575",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "LibrarianAgent",
+      "line_number": 88,
+      "docstring": "Persistent memory agent using ChromaDB for cross-job intelligence.\n\nThe Librarian maintains a vector database of:\n- Past RAGMission extractions\n- Successful positioning strategies\n- Competitor intelligence patterns\n- Industry-specific insights\n\nThis enables:\n- Learning from past successes\n- Consistent high-signal extraction\n- Progressive refinement of RAG quality",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitBreaker",
+      "line_number": 323,
+      "docstring": "Circuit breaker pattern implementation for RAG operations.\n(Extracted from resume_workflow_v16_20.py)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PhaseExecutor",
+      "line_number": 368,
+      "docstring": "Executes individual RAG phases with timeout protection and retries.\n(Extracted from resume_workflow_v16_20.py)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WebSearchTool",
+      "line_number": 512,
+      "docstring": "Web search tool using Gemini with Google Search integration.\n(Extracted and enhanced from resume_workflow_v16_20.py)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EnhancedJobDescriptionAnalyzer",
+      "line_number": 574,
+      "docstring": "Main orchestrator for HOP-0 RAG operations.\nIntegrates Librarian Agent for persistent learning.\n(Enhanced from resume_workflow_v16_20.py)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 104,
+      "docstring": "Initialize Librarian Agent with persistent storage.\n\nArgs:\n    storage_path: Directory for ChromaDB persistence",
+      "imports": [],
+      "dependencies": [
+        "Settings",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "store_mission_intelligence",
+      "line_number": 142,
+      "docstring": "Stores successful RAGMission and analysis for future reference.\n\nArgs:\n    rag_mission: Extracted RAGMission\n    thematic_analysis: Generated ThematicAnalysis\n    company_name: Target company\n    job_title: Target role title\n    metadata: Additional context",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "query_similar_missions",
+      "line_number": 192,
+      "docstring": "Queries for similar past missions to inform current extraction.\n\nArgs:\n    query: Search query (e.g., job title or theme)\n    company_name: Optional company filter\n    n_results: Number of results to return\n    \nReturns:\n    List of similar mission contexts",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_context_for_phase",
+      "line_number": 241,
+      "docstring": "Gets relevant Librarian context for a specific RAG phase.\n\nArgs:\n    phase_name: Name of RAG phase (phase1, phase2, etc.)\n    rag_mission: Current RAGMission\n    company_name: Target company\n    \nReturns:\n    Formatted context string or None",
+      "imports": [],
+      "dependencies": [
+        "enumerate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_mission_document",
+      "line_number": 292,
+      "docstring": "Formats RAGMission and analysis into searchable document.",
+      "imports": [],
+      "dependencies": [
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 329,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "call",
+      "line_number": 338,
+      "docstring": "Executes a function call with circuit breaker protection.",
+      "imports": [],
+      "dependencies": [
+        "func",
+        "CircuitBreakerOpenError",
+        "timedelta"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 374,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_with_retry",
+      "line_number": 380,
+      "docstring": "Executes a phase function with retry logic.",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "isinstance",
+        "len",
+        "RuntimeError",
+        "ValueError",
+        "type"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_backoff",
+      "line_number": 447,
+      "docstring": "Calculates exponential backoff with jitter.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_with_timeout",
+      "line_number": 461,
+      "docstring": "Executes a function with a POSIX signal-based timeout.",
+      "imports": [],
+      "dependencies": [
+        "func",
+        "PhaseTimeoutError",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_phase_result",
+      "line_number": 489,
+      "docstring": "Validates that a phase result has the expected structure.",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 518,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "GeminiService"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "search_and_analyze",
+      "line_number": 538,
+      "docstring": "Execute search and analysis using Gemini with Google Search.\n\nReturns:\n    Tuple of (result_dict, api_calls_made)",
+      "imports": [],
+      "dependencies": [
+        "type"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 582,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "TelemetryLogger",
+        "CircuitBreaker",
+        "LibrarianAgent",
+        "PhaseExecutor",
+        "WebSearchTool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "analyze_job_description",
+      "line_number": 615,
+      "docstring": "Main entry point for HOP-0: Multi-phase RAG analysis with Librarian integration.\n\nCOST-OPTIMIZED: Checks cache for similar missions before running expensive RAG.\n\nArgs:\n    job_description: Raw job description text\n    company_name: Target company name\n    job_title: Target job title\n    master_resume_index: Indexed master resume content\n    comp_config: Competitive analysis configuration\n    \nReturns:\n    ThematicAnalysis with high-signal extraction",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "RAGTelemetry"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_cache_for_similar_mission",
+      "line_number": 722,
+      "docstring": "COST-OPTIMIZED: Check Librarian cache for similar missions.\n\nIf a high-quality cached ThematicAnalysis is found for a similar role,\nreturn it directly to skip expensive RAG phases (saves ~4-5 LLM calls).\n\nArgs:\n    current_mission: The RAGMission just extracted\n    company_name: Target company\n    job_title: Target job title\n    similarity_threshold: Minimum similarity score (0-1) to use cache\n    \nReturns:\n    Cached ThematicAnalysis if high-quality match found, else None",
+      "imports": [],
+      "dependencies": [
+        "RetrievalSource"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_titles_are_similar",
+      "line_number": 811,
+      "docstring": "Check if two job titles are similar (basic string matching).",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_thematic_analysis_from_cache",
+      "line_number": 837,
+      "docstring": "Extract ThematicAnalysis from a cached Librarian document.\n\nThe document format is created by _format_mission_document.\nWe need to parse it back into a ThematicAnalysis object.",
+      "imports": [],
+      "dependencies": [
+        "ThematicAnalysis",
+        "enumerate",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_rag_mission_with_librarian",
+      "line_number": 898,
+      "docstring": "Extracts high-signal RAGMission with Librarian context.\nENHANCED: Now extracts strategic_priorities, competitors, differentiators, etc.",
+      "imports": [],
+      "dependencies": [
+        "RAGMission"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_rag_mission_fallback",
+      "line_number": 972,
+      "docstring": "Fallback RAGMission extraction using heuristics.",
+      "imports": [],
+      "dependencies": [
+        "RAGMission"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_four_phase_rag",
+      "line_number": 999,
+      "docstring": "Executes all 4 RAG phases with Librarian context integration.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "PartialRAGResult",
+        "partial"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_synthesize_thematic_analysis",
+      "line_number": 1199,
+      "docstring": "Synthesizes PartialRAGResult into final ThematicAnalysis.",
+      "imports": [],
+      "dependencies": [
+        "ThematicAnalysis",
+        "CompetitiveIntelligence",
+        "RetrievalSource",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_industry_from_jd",
+      "line_number": 1260,
+      "docstring": "Extracts industry from job description using heuristics.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_identify_peer_companies",
+      "line_number": 1279,
+      "docstring": "Identifies peer companies for competitive analysis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_dict_to_thematic_analysis",
+      "line_number": 1303,
+      "docstring": "Converts a dictionary to ThematicAnalysis dataclass.\nUsed by StateSerializer for deserialization.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "ThematicAnalysis",
+        "RetrievalSource",
+        "CompetitiveIntelligence",
+        "setattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "timeout_handler",
+      "line_number": 473,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "PhaseTimeoutError"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "copy": [
+      "line_14"
+    ],
+    "hashlib": [
+      "line_15"
+    ],
+    "json": [
+      "line_16"
+    ],
+    "logging": [
+      "line_17"
+    ],
+    "os": [
+      "line_18"
+    ],
+    "random": [
+      "line_19"
+    ],
+    "re": [
+      "line_20"
+    ],
+    "signal": [
+      "line_21"
+    ],
+    "time": [
+      "line_22"
+    ],
+    "from_collections": [
+      "line_23"
+    ],
+    "from_dataclasses": [
+      "line_24"
+    ],
+    "from_datetime": [
+      "line_25"
+    ],
+    "from_enum": [
+      "line_26"
+    ],
+    "from_functools": [
+      "line_27"
+    ],
+    "from_typing": [
+      "line_28"
+    ],
+    "from_config_RES_v2": [
+      "line_61"
+    ],
+    "from_models_RES": [
+      "line_67"
+    ],
+    "from_utils_RES_v2": [
+      "line_75"
+    ],
+    "prompts_RES_v2": [
+      "line_78"
+    ],
+    "google.generativeai": [
+      "line_32"
+    ],
+    "from_gemini_service": [
+      "line_33"
+    ],
+    "from_sklearn.feature_extraction.text": [
+      "line_41"
+    ],
+    "from_sklearn.metrics.pairwise": [
+      "line_42"
+    ],
+    "chromadb": [
+      "line_51"
+    ],
+    "from_chromadb.config": [
+      "line_52"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "store_mission_intelligence": "store_mission_intelligence",
+    "query_similar_missions": "query_similar_missions",
+    "get_context_for_phase": "get_context_for_phase",
+    "_format_mission_document": "_format_mission_document",
+    "call": "call",
+    "execute_with_retry": "execute_with_retry",
+    "_calculate_backoff": "_calculate_backoff",
+    "_execute_with_timeout": "_execute_with_timeout",
+    "_validate_phase_result": "_validate_phase_result",
+    "search_and_analyze": "search_and_analyze",
+    "analyze_job_description": "analyze_job_description",
+    "_check_cache_for_similar_mission": "_check_cache_for_similar_mission",
+    "_titles_are_similar": "_titles_are_similar",
+    "_extract_thematic_analysis_from_cache": "_extract_thematic_analysis_from_cache",
+    "_extract_rag_mission_with_librarian": "_extract_rag_mission_with_librarian",
+    "_extract_rag_mission_fallback": "_extract_rag_mission_fallback",
+    "_execute_four_phase_rag": "_execute_four_phase_rag",
+    "_synthesize_thematic_analysis": "_synthesize_thematic_analysis",
+    "_extract_industry_from_jd": "_extract_industry_from_jd",
+    "_identify_peer_companies": "_identify_peer_companies",
+    "_dict_to_thematic_analysis": "_dict_to_thematic_analysis",
+    "timeout_handler": "timeout_handler"
+  },
+  "class_signatures": {
+    "LibrarianAgent": "LibrarianAgent",
+    "CircuitBreaker": "CircuitBreaker",
+    "PhaseExecutor": "PhaseExecutor",
+    "WebSearchTool": "WebSearchTool",
+    "EnhancedJobDescriptionAnalyzer": "EnhancedJobDescriptionAnalyzer"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 95,
+    "cognitive_complexity": 60,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

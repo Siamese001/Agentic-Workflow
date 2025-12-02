@@ -1,0 +1,278 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\prompt_builder.py",
+    "file_hash": "08ce44a737afdefc66f5e278cd051f0f7181ac0d4fe1e18c0e6599b8788f107b",
+    "size_bytes": 21370,
+    "last_modified": "2025-12-01T15:36:20.793660",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "PromptEnvelope",
+      "line_number": 62,
+      "docstring": "Structured container for deterministic prompt assembly.\n\nSections map directly to the v10_8 envelope design, with explicit\nnaming so that downstream rendering and logging can reason about\neach component separately.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptInstance",
+      "line_number": 106,
+      "docstring": "Concrete prompt ready for LLM invocation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_acl_metadata",
+      "line_number": 129,
+      "docstring": "Extract ACL metadata from a PromptDefinition.\n\nExpected shape (stored in defn.metadata[\"acl\"]):\n\n    {\n        \"layers\": [\"L1\", \"L2\", ...],\n        \"agents\": [\"strategy\", \"rag\", \"drafting\", \"qa\", \"safety\"],\n        \"model_tiers\": [\"cheap\", \"balanced\", \"premium\"],\n    }\n\nAll fields are optional; missing fields are treated as \"no restriction\".",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_prompt_definition",
+      "line_number": 160,
+      "docstring": "Retrieve a PromptDefinition from the central registry.\n\nThis is a thin wrapper around ``PROMPT_REGISTRY`` / ``get_prompt``\nso that all lookups live in one place.",
+      "imports": [],
+      "dependencies": [
+        "KeyError",
+        "get_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_prompt_acl",
+      "line_number": 176,
+      "docstring": "Enforce both registry-level ACLs and per-prompt ACL metadata.\n\nThis function is intentionally side-effect free; it either returns\nor raises PermissionError.",
+      "imports": [],
+      "dependencies": [
+        "PermissionError",
+        "_extract_acl_metadata",
+        "isinstance",
+        "_get_prompt_definition"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_envelope_with_template",
+      "line_number": 222,
+      "docstring": "Merge a PromptEnvelope with the registry template into a final string.\n\nDefault templates follow the pattern:\n\n    \"## CONTEXT\\n\\n## INSTRUCTIONS\\n\\n## OUTPUT_FORMAT\\n\"\n\nThis helper injects the envelope contents into those anchors while\nalso adding the richer sections (Framing, Reasoning, Safety).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_context_budget_hints_from_plan",
+      "line_number": 279,
+      "docstring": "Extract context-budget hints from a plan object if it carries them.\n\nThis is intentionally shallow and structure-agnostic.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "isinstance",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_make_prompt_instance",
+      "line_number": 301,
+      "docstring": "Core helper to build a PromptInstance with ACL enforcement.",
+      "imports": [],
+      "dependencies": [
+        "_render_envelope_with_template",
+        "isinstance",
+        "PromptInstance",
+        "_get_prompt_definition",
+        "_build_context_budget_hints_from_plan",
+        "_check_prompt_acl"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_evidence",
+      "line_number": 341,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "enumerate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_summarize_job_and_resume",
+      "line_number": 348,
+      "docstring": "Compact textual summary of the job + resume inputs for use in prompts.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_strategy_prompt",
+      "line_number": 378,
+      "docstring": "Build a strategy planning prompt.",
+      "imports": [],
+      "dependencies": [
+        "_summarize_job_and_resume",
+        "PromptEnvelope",
+        "_make_prompt_instance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_rag_prompt",
+      "line_number": 422,
+      "docstring": "Build a retrieval / evidence fusion prompt.\n\nUsed by the Phase-3 RAG reasoning stage between retrieval and drafting.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "PromptEnvelope",
+        "_summarize_job_and_resume",
+        "_make_prompt_instance",
+        "_format_evidence"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_hyde_prompt",
+      "line_number": 481,
+      "docstring": "Build a HYDE prompt: generate an ideal answer for use as a retrieval proxy.\n\nThe output is a synthetic, idealized answer to the user's (implicit) query\nfor the job/resume pair, which retrieval.py will treat as a dense query.",
+      "imports": [],
+      "dependencies": [
+        "_summarize_job_and_resume",
+        "PromptEnvelope",
+        "_make_prompt_instance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_drafting_prompt",
+      "line_number": 532,
+      "docstring": "Build a drafting prompt for resume sections.",
+      "imports": [],
+      "dependencies": [
+        "_summarize_job_and_resume",
+        "PromptEnvelope",
+        "_make_prompt_instance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_qa_prompt",
+      "line_number": 583,
+      "docstring": "Build a QA prompt for validating drafted content.",
+      "imports": [],
+      "dependencies": [
+        "_summarize_job_and_resume",
+        "PromptEnvelope",
+        "_make_prompt_instance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_safety_prompt",
+      "line_number": 635,
+      "docstring": "Build a safety prompt for final policy / safety review.",
+      "imports": [],
+      "dependencies": [
+        "_summarize_job_and_resume",
+        "PromptEnvelope",
+        "_make_prompt_instance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_sections",
+      "line_number": 78,
+      "docstring": "Return an ordered mapping of envelope sections.\n\nThe order is semantic; callers that render a textual prompt\nshould iterate using SECTION_ORDER.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_30"
+    ],
+    "from_dataclasses": [
+      "line_32"
+    ],
+    "from_typing": [
+      "line_33"
+    ],
+    "from_models": [
+      "line_35"
+    ],
+    "from_prompt_system_v10_10": [
+      "line_53"
+    ]
+  },
+  "function_signatures": {
+    "_extract_acl_metadata": "_extract_acl_metadata",
+    "_get_prompt_definition": "_get_prompt_definition",
+    "_check_prompt_acl": "_check_prompt_acl",
+    "_render_envelope_with_template": "_render_envelope_with_template",
+    "_build_context_budget_hints_from_plan": "_build_context_budget_hints_from_plan",
+    "_make_prompt_instance": "_make_prompt_instance",
+    "_format_evidence": "_format_evidence",
+    "_summarize_job_and_resume": "_summarize_job_and_resume",
+    "build_strategy_prompt": "build_strategy_prompt",
+    "build_rag_prompt": "build_rag_prompt",
+    "build_hyde_prompt": "build_hyde_prompt",
+    "build_drafting_prompt": "build_drafting_prompt",
+    "build_qa_prompt": "build_qa_prompt",
+    "build_safety_prompt": "build_safety_prompt",
+    "to_sections": "to_sections"
+  },
+  "class_signatures": {
+    "PromptEnvelope": "PromptEnvelope",
+    "PromptInstance": "PromptInstance"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 19,
+    "cognitive_complexity": 15,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

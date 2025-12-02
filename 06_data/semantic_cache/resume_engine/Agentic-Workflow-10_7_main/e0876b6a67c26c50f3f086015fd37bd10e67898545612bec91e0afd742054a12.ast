@@ -1,0 +1,109 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat_equivalence_v10_7.py",
+    "file_hash": "e0876b6a67c26c50f3f086015fd37bd10e67898545612bec91e0afd742054a12",
+    "size_bytes": 2622,
+    "last_modified": "2025-12-01T12:27:41.669075",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_load_manifest",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Path"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_embedded_sources",
+      "line_number": 23,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "AssertionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_source_pairs",
+      "line_number": 37,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_load_manifest"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_flat_view_matches_source_files",
+      "line_number": 48,
+      "docstring": "Every flattened block must mirror the exact source test file content.",
+      "imports": [],
+      "dependencies": [
+        "_extract_embedded_sources",
+        "_source_pairs"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_manifest_matches_repository_tree",
+      "line_number": 64,
+      "docstring": "If a new test is added to tests/, it must appear in the manifest.",
+      "imports": [],
+      "dependencies": [
+        "_load_manifest"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_2"
+    ],
+    "ast": [
+      "line_4"
+    ],
+    "json": [
+      "line_5"
+    ],
+    "from_pathlib": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "pytest": [
+      "line_9"
+    ]
+  },
+  "function_signatures": {
+    "_load_manifest": "_load_manifest",
+    "_extract_embedded_sources": "_extract_embedded_sources",
+    "_source_pairs": "_source_pairs",
+    "test_flat_view_matches_source_files": "test_flat_view_matches_source_files",
+    "test_manifest_matches_repository_tree": "test_manifest_matches_repository_tree"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 3,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "canonical_form": "import subprocess, pytest\n@pytest.mark.parametrize(\"needle\", [\"TODO\",\"MOCK\",\"FIXME\"])\ndef test_no_dev_markers_in_repo(needle):\nr = subprocess.run([\"grep\",\"-R\",needle,\"agentic_workflow/\"], capture_output=True, text=True)\nassert needle not in r.stdout\n@pytest.mark.parametrize(\"pattern\", [\"return input\", \"pass # placeholder\"])\ndef test_no_identity_or_placeholder_functions(pattern):\nr = subprocess.run([\"grep\",\"-R\",pattern,\"agentic_workflow/\"], capture_output=True, text=True)\nassert pattern not in r.stdout",
+  "normalized_signature": "func:test_no_dev_markers_in_repo;func:test_no_identity_or_placeholder_functions",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_no_dev_markers_in_repo,test_no_identity_or_placeholder_functions",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions",
+    "uses_testing_framework"
+  ]
+}
