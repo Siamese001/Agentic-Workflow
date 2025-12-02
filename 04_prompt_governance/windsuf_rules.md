@@ -31,6 +31,7 @@ The ONLY allowed root-level contents:
 08_scripts/
 09_apps/
 10_tests/
+sub-atomic-design.md
 unified_structure_subatomic.yaml
 
 
