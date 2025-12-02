@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  phase1d-validator:
+    build:
+      context: .
+      dockerfile: runtime/phase_1d_dockerfile
+    container_name: agentic-workflow-phase1d
+    volumes:
+      # Mount current directory as read-only for safety
+      - type: bind
+        source: .
+        target: /app
+        read_only: true
+      # Allow write access to agentic_core/ for freeze report
+      - type: bind
+        source: ./agentic_core
+        target: /app/agentic_core
+      # Allow write access to schemas/ for execution report
+      - type: bind
+        source: ./schemas
+        target: /app/schemas
+      # Allow write access to data/ for execution report
+      - type: bind
+        source: ./data
+        target: /app/data
+    environment:
+      - PYTHONPATH=/app
+      - PHASE_1D_DRY_RUN=false
+      - PHASE_1D_VALIDATE_ONLY=false
+    restart: "no"
+    networks:
+      - phase1d-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+networks:
+  phase1d-network:
+    driver: bridge
