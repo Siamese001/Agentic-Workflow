@@ -1,0 +1,1105 @@
+Starting YAML transformation...
+Transforming domain: agentic_core
+  Processing agentic_core: 205 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 18 files
+          Processing intent: get-core-info -> get_core_info (11 files)
+            WARNING: Intent lost 1 files
+          Processing intent: check-core-rules -> check_core_rules (6 files)
+        Phase transformed: 18 -> 17 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 12 files
+          Processing intent: convert-core-content -> convert_core_content (11 files)
+        Phase transformed: 12 -> 12 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 12 files
+          Processing intent: pick-best-result -> pick_best_result (11 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 12 -> 11 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 12 files
+          Processing intent: check-core-structure -> check_core_structure (11 files)
+        Phase transformed: 12 -> 12 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 12 files
+          Processing intent: use-core-tools -> use_core_tools (11 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 12 -> 11 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 7 files
+          Processing intent: find-core-problems -> find_core_problems (6 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 7 -> 6 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 12 files
+          Processing intent: get-core-info -> get_core_info (11 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 12 -> 11 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 12 files
+          Processing intent: update-core-state -> update_core_state (11 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 12 -> 11 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 13 files
+          Processing intent: check-core-rules -> check_core_rules (6 files)
+          Processing intent: manage-core-costs -> manage_core_costs (6 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 13 -> 12 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 7 files
+          Processing intent: get-core-info -> get_core_info (6 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 7 -> 6 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 12 files
+          Processing intent: use-core-tools -> use_core_tools (11 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 12 -> 11 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 7 files
+          Processing intent: check-core-rules -> check_core_rules (6 files)
+        Phase transformed: 7 -> 7 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 12 files
+          Processing intent: use-core-tools -> use_core_tools (11 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 12 -> 11 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 7 files
+          Processing intent: check-core-structure -> check_core_structure (6 files)
+        Phase transformed: 7 -> 7 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 7 files
+          Processing intent: check-core-rules -> check_core_rules (6 files)
+        Phase transformed: 7 -> 7 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 12 files
+          Processing intent: get-core-info -> get_core_info (11 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 12 -> 11 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 7 files
+          Processing intent: check-core-rules -> check_core_rules (6 files)
+        Phase transformed: 7 -> 7 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 18 files
+          Processing intent: check-core-rules -> check_core_rules (11 files)
+          Processing intent: manage-core-costs -> manage_core_costs (6 files)
+            WARNING: Intent lost 1 files
+        Phase transformed: 18 -> 17 files
+    agentic_core transformed: 205 -> 186 files
+Transforming domain: apps
+  Processing apps: 330 files
+    apps has subdomains
+    Transforming subdomain: rg
+  Processing rg: 111 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-resume-info -> get_resume_info (6 files)
+          Processing intent: check-resume-rules -> check_resume_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 9 files
+          Processing intent: vectorize-resume -> vectorize_resume (6 files)
+          Processing intent: score-job-fit -> score_job_fit (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-resume-content -> pick_resume_content (3 files)
+          Processing intent: check-resume-format -> check_resume_format (3 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-resume-format -> check_resume_format (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-resume-tools -> use_resume_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-resume-problems -> find_resume_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-resume-info -> get_resume_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-resume-state -> update_resume_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-resume-rules -> check_resume_rules (6 files)
+          Processing intent: manage-resume-costs -> manage_resume_costs (3 files)
+        Phase transformed: 9 -> 9 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-resume-info -> get_resume_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-resume-tools -> use_resume_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-resume-problems -> find_resume_problems (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-resume-rules -> check_resume_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-resume-info -> get_resume_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-resume-tools -> use_resume_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-resume-format -> check_resume_format (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-resume-rules -> check_resume_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-resume-info -> get_resume_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-resume-rules -> check_resume_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-resume-rules -> check_resume_rules (6 files)
+          Processing intent: manage-resume-costs -> manage_resume_costs (3 files)
+        Phase transformed: 9 -> 9 files
+    rg transformed: 111 -> 111 files
+    Transforming subdomain: lic
+  Processing lic: 111 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-recipient-info -> get_recipient_info (6 files)
+          Processing intent: check-outreach-rules -> check_outreach_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 9 files
+          Processing intent: vectorize-message -> vectorize_message (6 files)
+          Processing intent: score-person -> score_person (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-message -> pick_message (3 files)
+          Processing intent: check-message-format -> check_message_format (3 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-message-format -> check_message_format (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-message-tools -> use_message_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-msg-problems -> find_msg_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-recipient-info -> get_recipient_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-outreach -> update_outreach (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-outreach-rules -> check_outreach_rules (6 files)
+          Processing intent: manage-outreach-costs -> manage_outreach_costs (3 files)
+        Phase transformed: 9 -> 9 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-recipient-info -> get_recipient_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-message-tools -> use_message_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-msg-problems -> find_msg_problems (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-outreach-rules -> check_outreach_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-recipient-info -> get_recipient_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-message-tools -> use_message_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-message-format -> check_message_format (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-outreach-rules -> check_outreach_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-recipient-info -> get_recipient_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-outreach-rules -> check_outreach_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-outreach-rules -> check_outreach_rules (6 files)
+          Processing intent: manage-outreach-costs -> manage_outreach_costs (3 files)
+        Phase transformed: 9 -> 9 files
+    lic transformed: 111 -> 111 files
+    Transforming subdomain: shared
+  Processing shared: 108 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-shared-info -> get_shared_info (6 files)
+          Processing intent: check-shared-rules -> check_shared_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 9 files
+          Processing intent: convert-shared -> convert_shared (6 files)
+          Processing intent: pick-best-result -> pick_best_result (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (3 files)
+          Processing intent: check-data-format -> check_data_format (3 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-data-format -> check_data_format (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-shared-tools -> use_shared_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-shared-problems -> find_shared_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-shared-info -> get_shared_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-shared-state -> update_shared_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-shared-rules -> check_shared_rules (6 files)
+          Processing intent: manage-shared-costs -> manage_shared_costs (3 files)
+        Phase transformed: 9 -> 9 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-shared-info -> get_shared_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-shared-tools -> use_shared_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-shared-rules -> check_shared_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-shared-info -> get_shared_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-shared-tools -> use_shared_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-data-format -> check_data_format (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-shared-rules -> check_shared_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-shared-info -> get_shared_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-shared-rules -> check_shared_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-shared-rules -> check_shared_rules (6 files)
+          Processing intent: manage-shared-costs -> manage_shared_costs (3 files)
+        Phase transformed: 9 -> 9 files
+    shared transformed: 108 -> 108 files
+    apps transformed: 330 -> 330 files
+Transforming domain: config
+  Processing config: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-config-info -> get_config_info (6 files)
+          Processing intent: check-config-rules -> check_config_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: convert-config-content -> convert_config_content (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-config-structure -> check_config_structure (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-config-tools -> use_config_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-config-problems -> find_config_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-config-info -> get_config_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-config-state -> update_config_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 6 files
+          Processing intent: check-config-rules -> check_config_rules (3 files)
+          Processing intent: manage-config-costs -> manage_config_costs (3 files)
+        Phase transformed: 6 -> 6 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-config-info -> get_config_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-config-tools -> use_config_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-config-rules -> check_config_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-config-tools -> use_config_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: check-config-structure -> check_config_structure (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-config-rules -> check_config_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-config-info -> get_config_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-config-rules -> check_config_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-config-rules -> check_config_rules (9 files)
+        Phase transformed: 9 -> 9 files
+    config transformed: 96 -> 96 files
+Transforming domain: data
+  Processing data: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-data-info -> get_data_info (6 files)
+          Processing intent: check-data-rules -> check_data_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: convert-data-content -> convert_data_content (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-data-structure -> check_data_structure (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-data-tools -> use_data_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-data-problems -> find_data_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-data-info -> get_data_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-data-state -> update_data_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 6 files
+          Processing intent: check-data-rules -> check_data_rules (3 files)
+          Processing intent: manage-data-costs -> manage_data_costs (3 files)
+        Phase transformed: 6 -> 6 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-data-info -> get_data_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-data-tools -> use_data_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-data-rules -> check_data_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-data-tools -> use_data_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: check-data-structure -> check_data_structure (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-data-rules -> check_data_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-data-info -> get_data_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-data-rules -> check_data_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-data-rules -> check_data_rules (9 files)
+        Phase transformed: 9 -> 9 files
+    data transformed: 96 -> 96 files
+Transforming domain: observability
+  Processing observability: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-observability-info -> get_observability_info (6 files)
+          Processing intent: check-observability-rules -> check_observability_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: convert-observability-content -> convert_observability_content (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-observability-structure -> check_observability_structure (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-observability-tools -> use_observability_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-observability-problems -> find_observability_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-observability-info -> get_observability_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-observability-state -> update_observability_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 6 files
+          Processing intent: check-observability-rules -> check_observability_rules (3 files)
+          Processing intent: manage-observability-costs -> manage_observability_costs (3 files)
+        Phase transformed: 6 -> 6 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-observability-info -> get_observability_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-observability-tools -> use_observability_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-observability-rules -> check_observability_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-observability-tools -> use_observability_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: check-observability-structure -> check_observability_structure (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-observability-rules -> check_observability_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-observability-info -> get_observability_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-observability-rules -> check_observability_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-observability-rules -> check_observability_rules (9 files)
+        Phase transformed: 9 -> 9 files
+    observability transformed: 96 -> 96 files
+Transforming domain: prompt_governance
+  Processing prompt_governance: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-prompt-info -> get_prompt_info (6 files)
+          Processing intent: check-prompt-rules -> check_prompt_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: convert-prompt-content -> convert_prompt_content (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-prompt-structure -> check_prompt_structure (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-prompt-tools -> use_prompt_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-prompt-problems -> find_prompt_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-prompt-info -> get_prompt_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-prompt-state -> update_prompt_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 6 files
+          Processing intent: check-prompt-rules -> check_prompt_rules (3 files)
+          Processing intent: manage-prompt-costs -> manage_prompt_costs (3 files)
+        Phase transformed: 6 -> 6 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-prompt-info -> get_prompt_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-prompt-tools -> use_prompt_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-prompt-rules -> check_prompt_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-prompt-tools -> use_prompt_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: check-prompt-structure -> check_prompt_structure (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-prompt-rules -> check_prompt_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-prompt-info -> get_prompt_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-prompt-rules -> check_prompt_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-prompt-rules -> check_prompt_rules (9 files)
+        Phase transformed: 9 -> 9 files
+    prompt_governance transformed: 96 -> 96 files
+Transforming domain: runtime
+  Processing runtime: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-runtime-info -> get_runtime_info (6 files)
+          Processing intent: check-runtime-rules -> check_runtime_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: convert-runtime-content -> convert_runtime_content (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-runtime-structure -> check_runtime_structure (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-runtime-tools -> use_runtime_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-runtime-problems -> find_runtime_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-runtime-info -> get_runtime_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-runtime-state -> update_runtime_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 6 files
+          Processing intent: check-runtime-rules -> check_runtime_rules (3 files)
+          Processing intent: manage-runtime-costs -> manage_runtime_costs (3 files)
+        Phase transformed: 6 -> 6 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-runtime-info -> get_runtime_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-runtime-tools -> use_runtime_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-runtime-rules -> check_runtime_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-runtime-tools -> use_runtime_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: check-runtime-structure -> check_runtime_structure (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-runtime-rules -> check_runtime_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-runtime-info -> get_runtime_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-runtime-rules -> check_runtime_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-runtime-rules -> check_runtime_rules (9 files)
+        Phase transformed: 9 -> 9 files
+    runtime transformed: 96 -> 96 files
+Transforming domain: schemas
+  Processing schemas: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-schema-info -> get_schema_info (6 files)
+          Processing intent: check-schema-rules -> check_schema_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: convert-schema-content -> convert_schema_content (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-schema-structure -> check_schema_structure (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-schema-tools -> use_schema_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-schema-problems -> find_schema_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-schema-info -> get_schema_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-schema-state -> update_schema_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 6 files
+          Processing intent: check-schema-rules -> check_schema_rules (3 files)
+          Processing intent: manage-schema-costs -> manage_schema_costs (3 files)
+        Phase transformed: 6 -> 6 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-schema-info -> get_schema_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-schema-tools -> use_schema_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-schema-rules -> check_schema_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-schema-tools -> use_schema_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: check-schema-structure -> check_schema_structure (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-schema-rules -> check_schema_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-schema-info -> get_schema_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-schema-rules -> check_schema_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-schema-rules -> check_schema_rules (9 files)
+        Phase transformed: 9 -> 9 files
+    schemas transformed: 96 -> 96 files
+Transforming domain: scripts
+  Processing scripts: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-scripts-info -> get_scripts_info (6 files)
+          Processing intent: check-scripts-rules -> check_scripts_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: convert-scripts-content -> convert_scripts_content (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-scripts-structure -> check_scripts_structure (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-scripts-tools -> use_scripts_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-scripts-problems -> find_scripts_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-scripts-info -> get_scripts_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-scripts-state -> update_scripts_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 6 files
+          Processing intent: check-scripts-rules -> check_scripts_rules (3 files)
+          Processing intent: manage-scripts-costs -> manage_scripts_costs (3 files)
+        Phase transformed: 6 -> 6 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-scripts-info -> get_scripts_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-scripts-tools -> use_scripts_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-scripts-rules -> check_scripts_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-scripts-tools -> use_scripts_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: check-scripts-structure -> check_scripts_structure (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-scripts-rules -> check_scripts_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-scripts-info -> get_scripts_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-scripts-rules -> check_scripts_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-scripts-rules -> check_scripts_rules (9 files)
+        Phase transformed: 9 -> 9 files
+    scripts transformed: 96 -> 96 files
+Transforming domain: tests
+  Processing tests: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 9 files
+          Processing intent: get-tests-info -> get_tests_info (6 files)
+          Processing intent: check-tests-rules -> check_tests_rules (3 files)
+        Phase transformed: 9 -> 9 files
+      Mapping phase: expand-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: convert-tests-content -> convert_tests_content (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: refine-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: pick-best-result -> pick_best_result (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 6 files
+          Processing intent: check-tests-structure -> check_tests_structure (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging validate-phase into existing P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-tests-tools -> use_tests_tools (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging act-phase into existing P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: find-tests-problems -> find_tests_problems (3 files)
+        Phase transformed: 3 -> 3 files
+        Merging inspect-phase into existing P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-tests-info -> get_tests_info (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging retrieve-phase into existing P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: update-tests-state -> update_tests_state (6 files)
+        Phase transformed: 6 -> 6 files
+        Merging agg-phase into existing P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 6 files
+          Processing intent: check-tests-rules -> check_tests_rules (3 files)
+          Processing intent: manage-tests-costs -> manage_tests_costs (3 files)
+        Phase transformed: 6 -> 6 files
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+        Transforming phase with 3 files
+          Processing intent: get-tests-info -> get_tests_info (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-tests-tools -> use_tests_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-tests-rules -> check_tests_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+        Transforming phase with 6 files
+          Processing intent: use-tests-tools -> use_tests_tools (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: validate-phase -> P2_inspect
+        Transforming phase with 3 files
+          Processing intent: check-tests-structure -> check_tests_structure (3 files)
+        Phase transformed: 3 -> 3 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-tests-rules -> check_tests_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+        Transforming phase with 6 files
+          Processing intent: get-tests-info -> get_tests_info (6 files)
+        Phase transformed: 6 -> 6 files
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 3 files
+          Processing intent: check-tests-rules -> check_tests_rules (3 files)
+        Phase transformed: 3 -> 3 files
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+        Transforming phase with 9 files
+          Processing intent: check-tests-rules -> check_tests_rules (9 files)
+        Phase transformed: 9 -> 9 files
+    tests transformed: 96 -> 96 files
+
+Transformation completed!
+Original file count: 1303
+Transformed file count: 1284
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\transform_yaml_fixed.py", line 370, in <module>
+    success = transform_yaml_structure()
+  File "C:\Git\Agentic-Workflow\transform_yaml_fixed.py", line 366, in transform_yaml_structure
+    print(f"\u274c Zero-loss verification FAILED - lost {original_count - transformed_count} files")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
