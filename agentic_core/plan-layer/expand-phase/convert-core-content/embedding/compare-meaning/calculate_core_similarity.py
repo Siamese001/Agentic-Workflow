@@ -3,7 +3,7 @@ L5 Implementation: calculate_core_similarity
 Role: L3_ORCHESTRATION
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:02:31.510846
+Generated: 2025-12-01T19:08:59.529689
 """
 
 import logging
@@ -76,5 +76,5 @@ class CalculateCoreSimilarity:
             "operation": "main",
             "role": "L3_ORCHESTRATION",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:02:31.510920"
+            "timestamp": "2025-12-01T19:08:59.529762"
         }
