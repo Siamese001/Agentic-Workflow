@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nDAG infrastructure for r\u00e9sum\u00e9 processing workflow orchestration.\nProvides directed acyclic graph execution for comprehensive r\u00e9sum\u00e9 enhancement operations.\n\"\"\"",
-  "normalized_signature": "",
-  "core_functionality": "configuration_or_data",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

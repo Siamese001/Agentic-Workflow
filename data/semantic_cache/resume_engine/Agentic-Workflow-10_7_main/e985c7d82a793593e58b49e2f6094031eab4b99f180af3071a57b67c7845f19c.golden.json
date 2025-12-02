@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Synthetic RAG simulator.\"\"\"\nimport random\nfrom typing import List\nfrom simulations.models.rag_simulation import (\nRAGSimMetrics,\nRAGSimRequest,\nRAGSimResult,\n)\nfrom simulations.utils import model_to_payload\nclass RAGSimulator:\n\"\"\"Runs retrieval quality simulations.\"\"\"\nasync def run(self, request: RAGSimRequest) -> RAGSimResult:\ndoc_count = len(request.documents)\ndiversity_bonus = min(doc_count / 10.0, 0.3)\nrecall = round(min(1.0, 0.4 + diversity_bonus + random.uniform(0.0, 0.4)), 3)\nprecision = round(min(1.0, 0.5 + random.uniform(-0.2, 0.3)), 3)\nredundancy = round(max(0.0, 0.2 + random.uniform(-0.1, 0.5)), 3)\nmetrics = RAGSimMetrics(\nrecall=max(0.0, recall),\nprecision=max(0.0, precision),\nredundancy=min(1.0, redundancy),\n)\ntop_docs: List[str] = request.documents[:3]\nreturn RAGSimResult(\nsimulation_id=request.simulation_id,\nsuccess=True,\nmetrics=model_to_payload(metrics),\ndetails={\"top_documents\": top_docs},\n)",
-  "normalized_signature": "class:RAGSimulator",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

@@ -1,0 +1,36 @@
+# Phase 1B Schemas Validation Container
+# Schemas directory reconciliation with read-only reporting
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /workspace
+
+# Install system dependencies including timeout
+RUN apt-get update && apt-get install -y \
+    coreutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy validation scripts and schemas structure
+COPY runtime/phase_1a_schemas_validation.py ./runtime/
+COPY runtime/phase_1b_schemas_validation.py ./runtime/
+COPY schemas_structure.yaml .
+COPY schemas/ ./schemas/
+
+# Ensure Phase 1A output exists (Phase 1B depends on it)
+RUN python runtime/phase_1a_schemas_validation.py
+
+# Create non-root user for security
+RUN useradd -m -u 1000 validator
+RUN chown -R validator:validator /workspace
+USER validator
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import sys; print('Phase 1B schemas validator ready')" || exit 1
+
+# Default command with timeout to prevent runaway processes
+CMD ["timeout", "300s", "python", "runtime/phase_1b_schemas_validation.py"]

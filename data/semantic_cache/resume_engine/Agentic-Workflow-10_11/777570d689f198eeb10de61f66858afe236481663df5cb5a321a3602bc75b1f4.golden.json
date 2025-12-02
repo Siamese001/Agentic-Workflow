@@ -1,9 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\n\"\"\"Snapshot-local runtime.trace package for v10_10 tests.\nThis ensures that imports like\nfrom runtime.trace.trace_reconstruction import get_routing_trace\nresolve correctly when tests are run with rootdir=Agentic-Workflow-10_10.\nThe implementation of get_routing_trace lives in trace_reconstruction.py in\nthis package and mirrors the real runtime.trace helper at the repo root.\n\"\"\"\nfrom .trace_reconstruction import get_routing_trace # noqa: F401",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"Local stub shim for pydantic imports in tests.\"\"\"\nfrom vendor.pydantic import * # noqa: F401,F403",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

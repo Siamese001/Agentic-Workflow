@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\n\"\"\"Facade for model routing functions used by orchestration layers.\nThis package re-exports the existing infra.model_routing primitives so\ncallers can depend on a stable ``orchestration.model_routing``\nnamespace without changing the underlying implementation.\n\"\"\"\nfrom infra.model_routing.models import RoutingContext, ModelChoice # noqa: F401\nfrom infra.model_routing.policies import ( # noqa: F401\nchoose_provider_and_model,\nenforce_budget,\n)\nfrom infra.model_routing.selector import select_model # noqa: F401\n__all__ = [\n\"RoutingContext\",\n\"ModelChoice\",\n\"choose_provider_and_model\",\n\"enforce_budget\",\n\"select_model\",\n]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

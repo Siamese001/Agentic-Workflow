@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"Snapshot-local runtime package shim for v10_10 tests.\nWhen tests are run with rootdir=Agentic-Workflow-10_10, the name ``runtime``\nresolves to this package. This shim ensures that imports like\n``from runtime.observability import start_span`` are forwarded to the real\nruntime package defined at the repo root.\n\"\"\"\nfrom __future__ import annotations\nimport importlib\nimport os\nimport sys\n_PARENT = os.path.dirname(os.path.dirname(__file__))\nif _PARENT not in sys.path:\nsys.path.insert(0, _PARENT)\n_real_runtime = importlib.import_module(\"runtime\")\nfor _sub in [\n\"runtime.observability\",\n\"runtime.runtime_utils\",\n\"runtime.trace\",\n\"runtime.trace.trace_reconstruction\",\n]:\ntry:\nsys.modules[_sub] = importlib.import_module(_sub)\nexcept Exception:\npass\nfrom runtime import * # noqa: F401,F403",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}
