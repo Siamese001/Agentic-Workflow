@@ -15,6 +15,20 @@ class YAMLHardeningValidatorRefined:
         self.metrics_after = {}
         self.validation_results = {}
         
+        # Explicit set of implemented keys that this validator actually computes
+        self.IMPLEMENTED_KEYS = {
+            "K1", "K2", "K3", "K4",      # Scope & Syntax
+            "K10", "K11",               # Zero-loss & leaf coverage  
+            "K20", "K21", "K22",        # H1 - Remove general / *-phase / *-layer
+            "K30", "K31", "K32", "K33", # H2 - L1-L5 and P1-P4 adoption
+            "K40", "K41", "K42",        # H3 - Naming / hyphen removal / snake_case
+            "K50",                      # H4 - Domain token deduplication
+            "K60", "K61", "K62",        # H5 - Flatten chains & depth constraint
+            "K70", "K71", "K72",        # H6 - Structural isomorphism
+            "K80", "K81", "K82", "K83", "K84",  # H7 - Metadata SSoT
+            "K90", "K91", "K92",        # Global correctness & reporting
+        }
+        
     def load_yaml(self):
         """Load both current and original YAML files"""
         try:
@@ -304,27 +318,32 @@ class YAMLHardeningValidatorRefined:
         content = str(self.data)
         results['K90'] = 'TODO' not in content and 'PLACEHOLDER' not in content
         
-        # K91: All keys evaluated explicitly
-        # The spec doesn't actually define all 92 keys (K1-K92), only specific ones
-        # We'll check that all keys we defined are evaluated
-        defined_keys = set(self.validation_results.keys())
-        required_keys = set([
-            'K1', 'K2', 'K3', 'K4',  # Scope & Syntax
-            'K10', 'K11',           # Zero-loss & leaf coverage  
-            'K20', 'K21', 'K22',    # H1 - Remove general / *-phase / *-layer
-            'K30', 'K31', 'K32', 'K33',  # H2 - L1-L5 and P1-P4 adoption
-            'K40', 'K41', 'K42',    # H3 - Naming / hyphen removal / snake_case
-            'K50',                  # H4 - Domain token deduplication
-            'K60', 'K61', 'K62',    # H5 - Flatten chains & depth constraint
-            'K70', 'K71', 'K72',    # H6 - Structural isomorphism
-            'K80', 'K81', 'K82', 'K83', 'K84',  # H7 - Metadata SSoT
-            'K90',                  # Global correctness
-        ])
-        results['K91'] = required_keys.issubset(defined_keys)
+        # Debug: Show current state
+        print(f"\n🔍 DEBUG: K91/K92 Evaluation")
+        print(f"   IMPLEMENTED_KEYS: {sorted(self.IMPLEMENTED_KEYS)}")
+        print(f"   Current validation_results: {sorted(self.validation_results.keys())}")
         
-        # K92: All keys K1-K91 pass
-        all_pass = all(self.validation_results.get(k, False) for k in required_keys if k != 'K92')
-        results['K92'] = all_pass
+        missing_keys = self.IMPLEMENTED_KEYS - set(self.validation_results.keys())
+        if missing_keys:
+            print(f"   ❌ Missing keys: {sorted(missing_keys)}")
+        
+        # K91: All implemented keys have been evaluated (no missing keys)
+        defined_keys = set(self.validation_results.keys())
+        results['K91'] = self.IMPLEMENTED_KEYS.issubset(defined_keys)
+        
+        print(f"   K91 result: {results['K91']} (subset check: {self.IMPLEMENTED_KEYS.issubset(defined_keys)})")
+        
+        # K92: All implemented keys are True
+        if results['K91']:
+            false_keys = [k for k in self.IMPLEMENTED_KEYS if k != 'K92' and not self.validation_results.get(k, False)]
+            if false_keys:
+                print(f"   ❌ False keys: {false_keys}")
+            all_pass = all(self.validation_results.get(k, False) for k in self.IMPLEMENTED_KEYS if k != 'K92')
+            results['K92'] = all_pass
+            print(f"   K92 result: {results['K92']}")
+        else:
+            results['K92'] = False
+            print(f"   K92 result: False (K91 failed)")
         
         return results
     
