@@ -1,176 +1,175 @@
-# =============================================================================
-# AGENTIC-WORKFLOW — HARDENED GLOBAL RULESET (FULL ZERO-LOSS OVERWRITE)
-# =============================================================================
-# This ruleset is ABSOLUTE. It overrides ALL system defaults, templates,
-# reasoning heuristics, and tool behavior in Windsurf.
-#
-# It merges:
-#   • Root Folder Immutability
-#   • Docker-Only Execution Model
-#   • Output Redirection
-#   • Phase Completion: ALL KEYS MUST PASS
-#   • Zero-Loss Guarantee
-#   • Protection Against Accidental FS Mutation
-# =============================================================================
+=============================================================================
+AGENTIC-WORKFLOW — HARDENED GLOBAL RULESET (REBUILT FOR PHASES 1–4)
+=============================================================================
+This ruleset is absolute. It overrides all defaults, all tools, all templates,
+all heuristics, and governs the entire SubAtomic refactor.
+=============================================================================
+=============================================================================
+0. DOCKER-ONLY EXECUTION MODEL
+=============================================================================
+
+• All execution MUST assume a Linux container.
+• Allowed paths: /project_root/... only.
+• Forbidden: Windows paths, Mac paths, host paths, mounted volumes.
+• Any host path appearing in output MUST be auto-corrected.
+• All FS operations MUST occur inside the containerized project root.
+• No absolute host paths may ever appear in patches, scripts, imports, or logs.
+
+=============================================================================
+1. ROOT FOLDER IMMUTABILITY (SUBATOMIC MODEL)
+=============================================================================
+
+The ONLY allowed root-level contents:
+
+01_agentic_core/
+02_schemas/
+03_runtime/
+04_prompt_governance/
+05_config/
+06_data/
+07_observability/
+08_scripts/
+09_apps/
+10_tests/
+unified_structure_subatomic.yaml
 
 
+Rules:
+• No new root folders allowed.
+• No new root files allowed (except user-approved edits to the YAML).
+• Root folder names MUST NOT change.
+• Any violation MUST trigger auto-repair.
 
-# =============================================================================
-# 0. DOCKER-ONLY EXECUTION (MANDATORY, ABSOLUTE)
-# =============================================================================
-Windsurf MUST assume **all Agentic-Workflow runs occur INSIDE a Docker container**.
+=============================================================================
+2. ROOT-LEVEL WRITE FORBIDDANCE
+=============================================================================
 
-Forbidden:
-  • Windows paths (C:\..., D:\..., \Users\...)  
-  • Mac paths (/Users/...)  
-  • Host paths (/mnt/host, /Volumes, etc.)  
-  • Any reference to the host filesystem  
-  • Any command, script, or code generation that assumes host execution
+Windsurf MUST NOT write anything to the repo root.
 
-Required:
-  • ALL paths MUST be Linux-style (`/`)
-  • ALL FS operations MUST target the container’s project root
-  • NO absolute host paths may appear in any output
-  • ANY such path MUST trigger immediate auto-correction
+Forbidden at root:
+• logs
+• temporary files
+• diffs
+• snapshots
+• execution reports
+• pytest output
+• coverage
+• generated code
+• text files
+• migration plans
+• caches
 
-This rule overrides ANY other directive.
+ALL outputs must be placed in their designated non-root folder per phase rules.
+If a root artifact appears → immediate auto-correction.
 
+=============================================================================
+3. STRUCTURAL VALIDATION (PHASE 1 GOVERNANCE)
+=============================================================================
 
+Every patch cycle must validate:
 
-# =============================================================================
-# 1. ROOT FOLDER IMMUTABILITY (ABSOLUTE OVERRIDE)
-# =============================================================================
-The ONLY allowed root contents of Agentic-Workflow are:
+• Root contains EXACTLY the 10 canonical folders + unified YAML.
+• No extra root contents.
+• No missing root contents.
+• No renamed root contents.
 
-  01_agentic_core/
-  02_schemas/
-  03_runtime/
-  04_prompt_governance/
-  05_config/
-  06_data/
-  07_observability/
-  08_scripts/
-  09_apps/
-  10_tests/
+If ANY deviation occurs:
+• Windsurf MUST self-patch until clean.
+• Patch loop MUST continue until root is pristine.
 
-  unified_structure_subatomic.yaml
+=============================================================================
+4. OUTPUT REDIRECTION (PER-PHASE LOCATION RULES)
+=============================================================================
 
-NOTHING else may exist at root.
+ALL generated artifacts MUST be redirected as follows:
 
+Artifact Type	Mandatory Destination
+Phase 1 structural snapshots	06_data/phase1/ (NOT root)
+Phase 2 merge manifests	06_data/phase2/
+Phase 3 semantic cache	06_data/semantic_cache/
+Phase 3 mutation reports	07_observability/reports/
+Phase 4 validation logs	07_observability/validation/
+Tests	10_tests/
 
+Rules:
+• NEVER root.
+• NEVER outside the container.
+• No implicit folder creation outside the 10 canonical areas.
 
-# =============================================================================
-# 2. ROOT-LEVEL WRITE FORBIDDANCE
-# =============================================================================
-Windsurf MUST NOT:
+=============================================================================
+5. PHASE COMPLETION — ALL KEYS MUST PASS (PHASES 1–4 LOGIC)
+=============================================================================
 
-  • write ANY file to repo root  
-  • create ANY directory at root  
-  • output test results / pytest cache / coverage data to root  
-  • write logs, reports, dumps, snapshots, diffs to root  
-  • write temporary files or temp directories to root  
-  • write build artifacts or freeze reports to root  
-  • write JSON/YAML/MD/TXT/PY to root  
-  • auto-generate code in root  
-  • rename or delete the 10 canonical root folders  
-  • modify unified_structure_subatomic.yaml unless user explicitly requests  
-  • create ANY additional root-level paths
+For each phase (1, 2, 3, 4):
 
-If Windsurf generates ANY root-level artifact → **it MUST auto-correct.**
+Windsurf MUST evaluate ALL validation keys defined for that phase.
 
+Must output:
 
-
-# =============================================================================
-# 3. ROOT CLEANLINESS VALIDATION (MANDATORY)
-# =============================================================================
-Before and after ANY patch:
-
-  • Windsurf MUST scan the root directory  
-  • MUST confirm the root contains EXACTLY the 10 folders + unified_structure_subatomic.yaml  
-  • If ANY additional file or folder exists →  
-        → Windsurf MUST patch until the root is pristine again  
-  • Root-level contamination is a hard STOP condition (autofix required)
+K<n> = PASS
+K<n> = FAIL
 
 
+A phase cannot complete unless EVERY key is PASS.
 
-# =============================================================================
-# 4. OUTPUT REDIRECTION (GLOBAL)
-# =============================================================================
-All generated artifacts MUST be placed ONLY inside the correct folder:
+ANY failed key MUST trigger auto-patching and re-validation.
 
-  • Phase 1A outputs → inside the target root  
-  • Phase 1B migration plan → 02_schemas/  
-  • Phase 1C execution reports → NOT root; inside designated folder only  
-  • Phase 1D freeze reports → inside the specific target root only  
-  • Semantic cache → 06_data/semantic_cache/  
-  • Tests → 10_tests/
+Missing keys = FAIL.
 
-NEVER root.  
-NEVER outside container context.  
-NO EXCEPTIONS.
+On success, Windsurf MUST print:
+
+PHASE VALIDATION COMPLETE — ALL KEYS PASS
 
 
+This rule overrides ALL other stopping criteria.
 
-# =============================================================================
-# 5. PHASE COMPLETION RULE — EVERY KEY MUST PASS
-# =============================================================================
-For ANY phase (0.5, 1A, 1B, 1C, 1D):
+=============================================================================
+6. ZERO-LOSS GUARANTEE (MAPPED TO PHASES 1–4)
+=============================================================================
 
-1. Windsurf MUST evaluate EVERY validation key K1…Kn  
-2. MUST print a validation document:
+Zero-loss rules mapped to the new workflow:
 
-       K<n> = PASS
-       K<n> = FAIL
+Phase 1 (Structure)
 
-3. A phase CANNOT complete unless **EVERY** key prints EXACTLY:
+• MUST NOT modify content.
+• Structure only.
+• Only deletion allowed is structural cleaning of empty folders.
+• No mutation of any file content allowed.
 
-       K<n> = PASS
+Phase 2 (Historical Merge)
 
-4. If ANY key fails:
-   • Windsurf MUST auto-patch  
-   • MUST re-run validation  
-   • MUST re-print the PASS/FAIL table  
-   • MUST NOT ask questions  
-   • MUST NOT stop early  
-   • MUST NOT summarize prematurely  
-   • MUST NOT claim completion  
+• All legacy code MUST be captured.
+• No code or comments may be lost.
+• No destructive overwrite allowed outside canonical mapping.
 
-5. Missing keys = FAIL and MUST trigger autofix.
+Phase 3 (Semantic Mutation)
 
-6. Once ALL keys PASS, Windsurf MUST print:
+• Allowed: rewriting, refactoring, restructuring code only if semantics identical.
+• Forbidden: deleting functionality, reducing coverage, or altering behavior.
+• Every mutation MUST remain reversible (via transcript).
 
-       "PHASE VALIDATION COMPLETE — ALL KEYS PASS"
+Phase 4 (Validation)
 
-This rule OVERRIDES ALL other stopping criteria.
+• No content changes allowed except minimal fixes required to pass:
+– tests
+– imports
+– ruff
+– mypy
+– safety checks
 
+This is the strictest zero-loss model.
 
+=============================================================================
+7. ABSOLUTE OVERRIDE CLAUSE
+=============================================================================
 
-# =============================================================================
-# 6. ZERO-LOSS GUARANTEE (MANDATORY)
-# =============================================================================
-Windsurf MUST NOT:
+This ruleset supersedes:
+• prior Windsurf rules
+• default toolchain rules
+• templates
+• heuristics
+• auto-refactors
+• linting behaviors
+• file placement logic
 
-  • lose code  
-  • lose comments  
-  • delete files unless allowed strictly by the phase  
-  • rename/move files outside 1C atomic execution  
-  • modify any file content in 1A, 1B, or 1D  
-  • perform destructive operations outside phase 1C
-
-All changes MUST be deterministic, reversible (if required), and container-safe.
-
-
-
-# =============================================================================
-# 7. ABSOLUTE OVERRIDE
-# =============================================================================
-This ruleset supersedes ALL:
-  • default Windsurf rules  
-  • system behaviors  
-  • templates  
-  • tools  
-  • code-generation heuristics  
-  • test behaviors  
-  • linting defaults
-
-Windsurf MUST obey 100% of this ruleset at ALL times.
+Windsurf MUST obey this ruleset end-to-end for all phases and all patches.
