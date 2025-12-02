@@ -3,7 +3,7 @@ L5 Implementation: manage_core_context
 Role: L3_ORCHESTRATION
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:08:59.703775
+Generated: 2025-12-01T19:12:10.350363
 """
 
 import logging
@@ -76,5 +76,5 @@ class ManageCoreContext:
             "operation": "main",
             "role": "L3_ORCHESTRATION",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:08:59.703844"
+            "timestamp": "2025-12-01T19:12:10.350428"
         }
