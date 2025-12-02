@@ -73,7 +73,13 @@ class Phase1BValidator:
         """Log a validation result"""
         result = ValidationResult(key=key, status=status, message=message, details=details)
         self.results.append(result)
-        print(f"[{status.value}] {key}: {message}")
+        print(f"{key} = {status.value}")
+        
+    def log_detailed_result(self, key: str, status: ValidationStatus, message: str, details: Optional[Dict] = None):
+        """Log a detailed validation result with message"""
+        result = ValidationResult(key=key, status=status, message=message, details=details)
+        self.results.append(result)
+        print(f"{key} = {status.value}: {message}")
         
     def normalize_path(self, path: str, to_forward_slash: bool = True) -> str:
         """Normalize path to forward slashes and ensure relative to target root"""
@@ -748,6 +754,11 @@ class Phase1BValidator:
         # Generate the complete migration plan
         self.generate_migration_plan()
         
+        # Print final PASS/FAIL table as required by global rules
+        print("\n=== VALIDATION RESULTS ===")
+        for result in self.results:
+            print(f"{result.key} = {result.status.value}")
+        
         print("\n=== Summary ===")
         total_keys = len(self.results)
         passed_keys = len([r for r in self.results if r.status == ValidationStatus.PASS])
@@ -764,6 +775,10 @@ class Phase1BValidator:
             for result in self.results:
                 if result.status == ValidationStatus.FAIL:
                     print(f"  {result.key}: {result.message}")
+        
+        # Print completion message as required by global rules
+        if failed_keys == 0:
+            print("\nPHASE VALIDATION COMPLETE — ALL KEYS PASS")
         
         return failed_keys == 0
         
