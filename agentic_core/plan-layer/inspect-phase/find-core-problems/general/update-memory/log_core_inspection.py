@@ -1,23 +1,23 @@
 """
 L5 Implementation: log_core_inspection
-Role: L3_ORCHESTRATION
+Role: L1_PLANNING
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:12:10.265478
+Generated: 2025-12-01T19:22:07.354903
 """
 
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
-class L3OrchestrationInterface(ABC):
-    """Abstract base for L3 orchestration operations."""
+class L1PlanningInterface(ABC):
+    """Abstract base for L1 planning operations."""
     
     @abstractmethod
-    def orchestrate(self, workflow: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Orchestrate workflow execution."""
+    def plan(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate plan from input data."""
         pass
 
 
@@ -26,7 +26,7 @@ class LogCoreInspection:
 
     def fix_file(self, input_data, filepath) -> Dict[str, Any]:
         """
-        L3_ORCHESTRATION function: fix_file
+        L1_PLANNING function: fix_file
         
         Args:
             self: Instance reference
@@ -35,16 +35,16 @@ class LogCoreInspection:
         Returns:
             Dict containing operation results
         """
-        logger.info(f"Executing fix_file")
+        logger.info("Executing fix_file")
         
-        # Enhanced l3_orchestration implementation
+        # Enhanced l1_planning implementation
         result = self._execute_fix_file(input_data, filepath)
         
         return result
 
     def main(self, input_data) -> Dict[str, Any]:
         """
-        L3_ORCHESTRATION function: main
+        L1_PLANNING function: main
         
         Args:
             self: Instance reference
@@ -53,9 +53,9 @@ class LogCoreInspection:
         Returns:
             Dict containing operation results
         """
-        logger.info(f"Executing main")
+        logger.info("Executing main")
         
-        # Enhanced l3_orchestration implementation
+        # Enhanced l1_planning implementation
         # Source: Extracted from semantic cache
         result = self._execute_main(input_data)
         
@@ -65,16 +65,16 @@ class LogCoreInspection:
     def _execute_main(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Helper method for main - contains extracted implementation
-        Role: L3_ORCHESTRATION
+        Role: L1_PLANNING
         """
         # Implementation extracted from semantic cache
         # TODO: Integrate actual implementation with proper L5 wrapping
-        logger.debug(f"Executing helper for main")
+        logger.debug("Executing helper for main")
         
         return {
             "status": "success",
             "operation": "main",
-            "role": "L3_ORCHESTRATION",
+            "role": "L1_PLANNING",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:12:10.265542"
+            "timestamp": "2025-12-01T19:22:07.354973"
         }
