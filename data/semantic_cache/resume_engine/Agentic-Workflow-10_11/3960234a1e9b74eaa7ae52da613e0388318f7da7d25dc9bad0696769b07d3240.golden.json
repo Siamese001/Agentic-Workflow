@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\n\"\"\"Orchestration package for higher-level routing and DAG helpers.\"\"\"",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

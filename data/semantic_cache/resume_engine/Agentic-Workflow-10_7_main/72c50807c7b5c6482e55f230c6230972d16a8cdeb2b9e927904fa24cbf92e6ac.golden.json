@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nredis_stub \u2013 safe minimal Redis replacement for offline tests.\nThis stub:\n- does NOT shadow the real 'redis' client\n- is only active when vendor stubs are enabled\n- provides get / set / setex / delete used in v10.7 CacheManager\n\"\"\"\nfrom __future__ import annotations\nimport time\nfrom typing import Dict, Any, Optional\nclass RedisStubStore:\n\"\"\"In-memory key-value store with optional TTL support.\"\"\"\ndef __init__(self):\nself._store: Dict[str, Any] = {}\nself._expiry: Dict[str, float] = {}\ndef cleanup(self):\n\"\"\"Remove expired keys.\"\"\"\nnow = time.time()\nto_delete = [k for k, exp in self._expiry.items() if exp <= now]\nfor k in to_delete:\nself._store.pop(k, None)\nself._expiry.pop(k, None)\ndef get(self, key: str) -> Optional[str]:\nself.cleanup()\nreturn self._store.get(key)\ndef set(self, key: str, value: str) -> None:\nself._store[key] = value\ndef setex(self, key: str, ttl: int, value: str) -> None:\nself._store[key] = value\nself._expiry[key] = time.time() + ttl\ndef delete(self, key: str):\nself._store.pop(key, None)\nself._expiry.pop(key, None)\nclass Redis:\n\"\"\"\nMinimal Redis stub for offline use.\nSupports only what CacheManager needs:\n- get\n- set\n- setex\n- delete\n\"\"\"\ndef __init__(self, *args, **kwargs):\nself._store = RedisStubStore()\ndef get(self, key: str):\nreturn self._store.get(key)\ndef set(self, key: str, value: str):\nself._store.set(key, value)\ndef setex(self, key: str, ttl: int, value: str):\nself._store.setex(key, ttl, value)\ndef delete(self, key: str):\nself._store.delete(key)\n__all__ = [\"Redis\"]",
-  "normalized_signature": "func:__init__;func:cleanup;func:get;func:set;func:setex;func:delete;class:RedisStubStore;class:Redis",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:cleanup,get,set,setex,delete,get,set,setex,delete",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

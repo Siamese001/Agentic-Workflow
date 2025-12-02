@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom .models import SimScenario, SimOutcome\nfrom .simulator import run_scenario\nfrom . import metrics\n__all__ = [\n\"SimScenario\",\n\"SimOutcome\",\n\"run_scenario\",\n\"metrics\",\n]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

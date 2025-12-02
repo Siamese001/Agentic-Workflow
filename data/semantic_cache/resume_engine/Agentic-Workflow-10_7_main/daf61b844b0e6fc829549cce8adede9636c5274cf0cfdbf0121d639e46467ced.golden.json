@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"Local stub shim for the chromadb package used in tests.\"\"\"\nfrom vendor.chromadb_stub import (\nClient,\nCollection,\nHttpClient,\nPersistentClient,\nembedding_functions as _embedding_functions,\n)\n__all__ = [\n\"Client\",\n\"Collection\",\n\"HttpClient\",\n\"PersistentClient\",\n\"embedding_functions\",\n]\nclass utils: # pragma: no cover - namespace compatibility\nembedding_functions = _embedding_functions\nembedding_functions = _embedding_functions",
-  "normalized_signature": "class:utils",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

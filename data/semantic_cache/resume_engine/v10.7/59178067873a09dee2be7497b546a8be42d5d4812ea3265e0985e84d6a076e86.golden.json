@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"Minimal stub of the anthropic client used for tests.\"\"\"\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import Any, Dict\n@dataclass\nclass Client:\napi_key: str | None = None\ndef messages_create(self, *, model: str, messages: list[Dict[str, Any]], **kwargs: Any) -> Dict[str, Any]:\nreturn {\n\"model\": model,\n\"messages\": messages,\n\"content\": [{\"type\": \"text\", \"text\": \"stubbed anthropic response\"}],\n\"meta\": kwargs,\n}\n__all__ = [\"Client\"]",
-  "normalized_signature": "func:messages_create;class:Client",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:messages_create",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

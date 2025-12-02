@@ -1,9 +1,0 @@
-{
-  "canonical_form": "\"\"\"Unit tests for L5 Safety & Policy Layer\"\"\"",
-  "normalized_signature": "",
-  "core_functionality": "configuration_or_data",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

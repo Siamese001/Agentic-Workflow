@@ -1,0 +1,37 @@
+# Phase 1C Schemas Auto-Correction Container
+# Safe atomic renames for case and normalization fixes
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    coreutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy validation scripts and schemas structure
+COPY runtime/phase_1a_schemas_validation.py runtime/
+COPY runtime/phase_1b_schemas_validation.py runtime/
+COPY runtime/phase_1c_schemas_validation.py runtime/
+COPY schemas_structure.yaml .
+COPY schemas/ ./schemas/
+
+# Ensure Phase 1A and Phase 1B outputs exist (Phase 1C depends on them)
+RUN python runtime/phase_1a_schemas_validation.py
+RUN python runtime/phase_1b_schemas_validation.py
+
+# Create non-root user
+RUN useradd -m -u 1000 validator && chown -R validator:validator /app
+USER validator
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import sys; print('Phase 1C schemas validator ready')" || exit 1
+
+# Set default command with timeout
+CMD timeout 300s python runtime/phase_1c_schemas_validation.py

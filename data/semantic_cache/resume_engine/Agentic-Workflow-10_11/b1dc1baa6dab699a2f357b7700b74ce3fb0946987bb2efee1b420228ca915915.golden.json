@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nProvides access to specialized AI agents for r\u00e9sum\u00e9 analysis and job matching optimization.\nImproves r\u00e9sum\u00e9 quality by coordinating strategy, drafting, QA, and safety agents for comprehensive career analysis.\n\"\"\"\nfrom __future__ import annotations\nfrom l2.agents import (\nLLMBaseAgent,\nStrategyLLMAgent,\nDraftingGuild,\nSemanticQAAgent,\nConstitutionalSafetyAgent,\nHYDEQueryAgent,\nQACouncilAgent,\n)\n__all__ = [\n\"LLMBaseAgent\",\n\"StrategyLLMAgent\",\n\"DraftingGuild\",\n\"SemanticQAAgent\",\n\"ConstitutionalSafetyAgent\",\n\"HYDEQueryAgent\",\n\"QACouncilAgent\",\n]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

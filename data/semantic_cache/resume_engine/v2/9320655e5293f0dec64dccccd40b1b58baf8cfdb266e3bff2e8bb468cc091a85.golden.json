@@ -1,7 +1,0 @@
-{
-  "canonical_form": "{\n\"canonical_verbs\": {\n\"LED\": [\n\"led\",\n\"spearheaded\",\n\"directed\",\n\"managed\",\n\"governed\",\n\"oversaw\"\n],\n\"DEVELOPED\": [\n\"developed\",\n\"architected\",\n\"built\",\n\"created\",\n\"designed\",\n\"engineered\",\n\"implemented\"\n],\n\"IMPROVED\": [\n\"improved\",\n\"enhanced\",\n\"optimized\",\n\"accelerated\",\n\"streamlined\",\n\"increased\",\n\"boosted\",\n\"revitalized\"\n],\n\"REDUCED\": [\n\"reduced\",\n\"cut\",\n\"decreased\",\n\"minimized\",\n\"slashed\"\n],\n\"PARTNERED\": [\n\"partnered\",\n\"collaborated\",\n\"aligned\",\n\"negotiated\",\n\"secured\"\n],\n\"AUTOMATED\": [\n\"automated\",\n\"orchestrated\"\n],\n\"DEPLOYED\": [\n\"deployed\",\n\"launched\",\n\"rolled out\"\n]\n}\n}",
-  "normalized_signature": "",
-  "core_functionality": "configuration_or_data",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

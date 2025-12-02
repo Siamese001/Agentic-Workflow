@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nCMS compiler for resume generation prompt compilation.\nProvides prompt compilation functionality to ensure consistent\nresume improvement and job alignment.\n\"\"\"\nfrom typing import Any, Dict, Optional\ndef compile_prompt(prompt: str, context: Optional[Dict[str, Any]] = None) -> str:\n\"\"\"\nCompiles prompt template for resume generation.\nEnsures consistent prompt structure for improved resume\nquality and job alignment.\n\"\"\"\nif context is None:\ncontext = {}\ntry:\nreturn prompt.format(**context)\nexcept KeyError as e:\nreturn prompt\nexcept Exception:\nreturn prompt\nclass PromptCompiler:\n\"\"\"\nCMS prompt compiler for resume generation.\nEnsures consistent prompt compilation for improved resume\nquality and job alignment.\n\"\"\"\ndef __init__(self, default_context: Optional[Dict[str, Any]] = None):\nself.default_context = default_context or {}\ndef compile(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> str:\n\"\"\"Compiles prompt with merged context for resume generation.\"\"\"\nmerged_context = {**self.default_context, **(context or {})}\nreturn compile_prompt(prompt, merged_context)",
-  "normalized_signature": "func:compile_prompt;func:__init__;func:compile;class:PromptCompiler",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:compile_prompt,compile",
-  "test_coverage": []
-}
