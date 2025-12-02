@@ -21,7 +21,7 @@ sys.path.append(str(project_root / "runtime"))
 
 from semantic_lineage import (
     EngineType, ResponsibilityLevel, FileExtension, FileSignature,
-    ASTNode, ASTSignature, SemanticLineageValidator
+    ASTNode, ASTSignature, SemanticCacheEntry, SemanticLineageValidator
 )
 from semantic_scanner import ASTExtractor
 
