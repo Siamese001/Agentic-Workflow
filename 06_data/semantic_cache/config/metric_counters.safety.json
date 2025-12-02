@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 147,
+  "generated_at": 1764703110.5994122,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\planner-microagent-layer\\rank-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\metric_counters.yaml"
+}

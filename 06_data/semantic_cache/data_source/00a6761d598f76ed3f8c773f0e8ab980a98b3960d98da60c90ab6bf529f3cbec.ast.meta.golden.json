@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_7_main\\\\tests\\\\v10_7\\\\test_flat__integration__test_end_to_end_paths_v10_7.py\",\n  \"file_hash\": \"00a6761d598f76ed3f8c773f0e8ab980a98b3960d98da60c90ab6bf529f3cbec\",\n  \"size_bytes\": 2613,\n  \"last_modified\": \"2025-12-01T12:27:41.694448\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_7_main\",\n  \"file_extension\": \".py\"\n}",
+  "full_hash": "431609075a3ce92c4e89783a5090f34bc2370683f13186dc27599be4db7fd1fb",
+  "generated_at": 1764703737.4758203,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_7_main\\00a6761d598f76ed3f8c773f0e8ab980a98b3960d98da60c90ab6bf529f3cbec.ast.meta.json"
+}

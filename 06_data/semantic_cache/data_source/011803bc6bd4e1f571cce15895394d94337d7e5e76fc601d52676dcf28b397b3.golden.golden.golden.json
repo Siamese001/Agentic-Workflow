@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"canonical_form\\\": \\\"\\\\\\\"\\\\\\\"\\\\\\\"Tests package - Test suite for atomic architecture.\\\\\\\"\\\\\\\"\\\\\\\"\\\",\\n  \\\"normalized_signature\\\": \\\"\\\",\\n  \\\"core_functionality\\\": \\\"configuration_or_data\\\",\\n  \\\"interface_contract\\\": \\\"public_methods:\\\",\\n  \\\"test_coverage\\\": [\\n    \\\"contains_tests\\\"\\n  ]\\n}\",\n  \"full_hash\": \"0ad51fbfd1df703a6a52174dae7082d36bdaa6f769cc02bcdf282ac14d16076b\",\n  \"generated_at\": 1764702790.2186139,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\011803bc6bd4e1f571cce15895394d94337d7e5e76fc601d52676dcf28b397b3.golden.json\"\n}",
+  "full_hash": "9ad81442850492bb4f7469d89d21ced798217af1279ad9efc1cfb7ac69e4701d",
+  "generated_at": 1764703159.3266726,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\011803bc6bd4e1f571cce15895394d94337d7e5e76fc601d52676dcf28b397b3.golden.golden.json"
+}

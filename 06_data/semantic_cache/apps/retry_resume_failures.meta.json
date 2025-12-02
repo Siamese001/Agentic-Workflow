@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\act-phase\\use-resume-tools\\routing\\retry-task\\retry_resume_failures.py",
+    "rel_path": "retry_resume_failures.py",
+    "root_name": "apps",
+    "file_hash": "40228a5c9baf8aed6032591cdf3f480cb7c420ed863220bc169c491945480614",
+    "file_size": 6846,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 6
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703989.332659
+}

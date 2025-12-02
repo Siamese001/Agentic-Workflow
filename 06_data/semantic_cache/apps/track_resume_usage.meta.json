@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\safety-phase\\manage-resume-costs\\general\\update-memory\\track_resume_usage.py",
+    "rel_path": "track_resume_usage.py",
+    "root_name": "apps",
+    "file_hash": "8a899fccb011e1a56515eb439368b99ffd7b8a690175f9e606f9b09c085d6765",
+    "file_size": 11260,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 6
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703989.5982313
+}

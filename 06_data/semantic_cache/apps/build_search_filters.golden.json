@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - build_search_filters\nImplements L1 Cognitive Planning Layer for build search filters operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass BuildSearchFiltersPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass BuildSearchFiltersPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass BuildSearchFiltersPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n ",
+  "full_hash": "f24674aef968eeaab01a0c7cc5102ef1e44d331dd11e0b13cad3d21381f6c82c",
+  "generated_at": 1764703990.17838,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\plan-phase\\get-resume-info\\utility\\prepare-information\\build_search_filters.py"
+}

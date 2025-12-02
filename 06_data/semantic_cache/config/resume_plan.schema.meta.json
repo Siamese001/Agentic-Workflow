@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\observer-microagent-layer\\retry-phase-group\\vectorization-ops\\general-operations-ops\\utility-functions-ops\\resume_plan.schema.json",
+    "rel_path": "resume_plan.schema.json",
+    "root_name": "config",
+    "file_hash": "f3122801557d0b8139c8e4e30b2c1b4dde595f01004376caa485cf5de8d98497",
+    "file_size": 14743,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703109.98809
+}

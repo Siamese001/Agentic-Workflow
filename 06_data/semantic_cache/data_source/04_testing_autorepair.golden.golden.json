@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"# /windsurf_rules/04_testing_autorepair.md\\n## Testing Standards, Continuous Re-Run, Auto-Repair Loop (Condensed)\\n\\n### 1. Testing Requirements\\n- Must pass: imports, pytest, ruff, mypy.\\n- No regressions allowed in RAG, drafting, QA, safety, HYDE, ExecutionContext.\\n- Each agent requires: functional, schema, edge-case, determinism, failure-mode, and no-op detection tests.\\n\\n### 2. Zero-Failure Mandate\\n- Partial passes count as failures.\\n- No skips, xfail, or placeholders unless explicitly approved.\\n- All tests MUST pass 100% before any command may complete.\\n\\n### 3. Continuous Auto-Retry Loop\\n- After any failure, the ENTIRE test suite must automatically re-run.\\n- Windsurf must apply corrective patches between runs.\\n- The test loop must continue indefinitely until all tests pass.\\n- Windsurf must not stop, pause, or return control until the suite is fully green.\\n\\n### 4. Mandatory Console Review\\n- Windsurf must parse the full test console after each ru",
+  "full_hash": "3eec2b8ab3a8bd4f3348197bcf3a193580291545c5a1403bb4b494c1a2522e35",
+  "generated_at": 1764703653.7997854,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\04_testing_autorepair.golden.json"
+}

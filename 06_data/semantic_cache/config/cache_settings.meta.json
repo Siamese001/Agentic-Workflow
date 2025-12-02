@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\observer-microagent-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\cache_settings.yaml",
+    "rel_path": "cache_settings.yaml",
+    "root_name": "config",
+    "file_hash": "bb20d90ba3427a99983274d7248d4ba5b857fbf46cb096d32b9d876f77165188",
+    "file_size": 155,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703109.9790094
+}

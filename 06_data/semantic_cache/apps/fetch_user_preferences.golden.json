@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - fetch_user_preferences\nImplements L1 Cognitive Planning Layer for fetch user preferences operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass FetchUserPreferencesPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass FetchUserPreferencesPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass FetchUserPreferencesPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succe",
+  "full_hash": "7d79d6e29fea71601023f8b11c5b9b0dfb9890d4ef07c56ed05f4b5cd7f02fe1",
+  "generated_at": 1764703990.3896012,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\retrieve-phase\\get-resume-info\\general\\understand-request\\fetch_user_preferences.py"
+}

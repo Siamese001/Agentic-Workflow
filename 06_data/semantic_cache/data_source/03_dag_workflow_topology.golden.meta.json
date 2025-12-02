@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\03_dag_workflow_topology.golden.json",
+    "rel_path": "03_dag_workflow_topology.golden.json",
+    "root_name": "data_source",
+    "file_hash": "1583b97a0fa67132f7a754cc030bc47b559be88178fa67cf70b8885344d74a18",
+    "file_size": 1114,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703653.641472
+}

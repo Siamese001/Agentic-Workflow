@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\exec-layer\\inspect-phase\\find-resume-problems\\general\\update-memory\\diagnose_resume_issues.py",
+    "rel_path": "diagnose_resume_issues.py",
+    "root_name": "apps",
+    "file_hash": "17c309409c2e35a4fd2b57af39abbd637ff26d9ef9a71be33157ecd50d955b3e",
+    "file_size": 6794,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 6
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703989.038983
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"baseline_hash\": \"\",\n  \"current_hash\": \"44c28765ee6fcf7b783c6acc5973a5d3d7abc08d69bae7140920a53741b4af60\",\n  \"diff_type\": \"initial\",\n  \"generated_at\": 1764702986.3561447,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\03_dag_workflow_topology.md\"\n}",
+  "full_hash": "d81f589a2be9575cf20f5060c975336f1ddcb336c2baabec33f71eb5515c4075",
+  "generated_at": 1764703653.5882182,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\03_dag_workflow_topology.diff.json"
+}

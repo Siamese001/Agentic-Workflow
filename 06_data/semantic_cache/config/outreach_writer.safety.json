@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 469,
+  "generated_at": 1764703109.845609,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\executor-microagent-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\outreach_writer.yaml"
+}

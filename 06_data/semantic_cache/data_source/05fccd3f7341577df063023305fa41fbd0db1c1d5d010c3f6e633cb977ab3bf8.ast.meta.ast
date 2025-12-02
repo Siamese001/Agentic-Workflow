@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__stacks__test_rag_execution_v10_7.py'),
+          Constant(value='05fccd3f7341577df063023305fa41fbd0db1c1d5d010c3f6e633cb977ab3bf8'),
+          Constant(value=2571),
+          Constant(value='2025-12-01T12:27:41.597218'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_7_main'),
+          Constant(value='.py')]))])

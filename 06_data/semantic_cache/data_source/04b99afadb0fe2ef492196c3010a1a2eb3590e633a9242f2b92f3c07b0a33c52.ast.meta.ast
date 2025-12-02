@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Monolith\\DEPRECATION_APPROVAL.md'),
+          Constant(value='04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52'),
+          Constant(value=5359),
+          Constant(value='2025-12-01T12:27:36.090619'),
+          Constant(value='RG'),
+          Constant(value='Monolith'),
+          Constant(value='.md')]))])

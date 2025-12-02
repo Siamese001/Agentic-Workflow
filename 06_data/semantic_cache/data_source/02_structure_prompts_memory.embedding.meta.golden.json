@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"word_count\": 167,\n  \"unique_words\": 106,\n  \"generated_at\": 1764702986.3461661,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\02_structure_prompts_memory.md\"\n}",
+  "full_hash": "0a461800058d342e5eeb7cd3b224fae0dbd224401b8135a37c6925c38766b838",
+  "generated_at": 1764703653.3231094,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\02_structure_prompts_memory.embedding.meta.json"
+}

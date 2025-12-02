@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - handle_api_timeouts\nImplements L1 Cognitive Planning Layer for handle api timeouts operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass HandleApiTimeoutsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass HandleApiTimeoutsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass HandleApiTimeoutsPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n    da",
+  "full_hash": "9b2a946b783b4587d306c967b62446ed087525aacf60f598d57e8b81137b2991",
+  "generated_at": 1764703989.707689,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\act-phase\\use-resume-tools\\routing\\retry-task\\handle_api_timeouts.py"
+}

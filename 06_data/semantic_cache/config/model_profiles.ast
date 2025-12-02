@@ -1,0 +1,62 @@
+Module(
+  body=[
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    FunctionDef(
+      name='invoke_model',
+      args=arguments(
+        args=[
+          arg(
+            arg='prompt',
+            annotation=Name(id='str', ctx=Load())),
+          arg(
+            arg='route_metadata',
+            annotation=Subscript(
+              value=Name(id='Dict', ctx=Load()),
+              slice=Tuple(
+                elts=[
+                  Name(id='str', ctx=Load()),
+                  Name(id='Any', ctx=Load())],
+                ctx=Load()),
+              ctx=Load()))]),
+      body=[
+        Expr(
+          value=Constant(value='Deterministic model invocation stub that echoes prompt metadata.')),
+        Assign(
+          targets=[
+            Name(id='completion', ctx=Store())],
+          value=Subscript(
+            value=Name(id='prompt', ctx=Load()),
+            slice=Slice(
+              upper=Constant(value=30)),
+            ctx=Load())),
+        Assign(
+          targets=[
+            Name(id='model_name', ctx=Store())],
+          value=Call(
+            func=Attribute(
+              value=Name(id='route_metadata', ctx=Load()),
+              attr='get',
+              ctx=Load()),
+            args=[
+              Constant(value='model')])),
+        Return(
+          value=Dict(
+            keys=[
+              Constant(value='completion'),
+              Constant(value='model')],
+            values=[
+              Name(id='completion', ctx=Load()),
+              Name(id='model_name', ctx=Load())]))],
+      returns=Subscript(
+        value=Name(id='Dict', ctx=Load()),
+        slice=Tuple(
+          elts=[
+            Name(id='str', ctx=Load()),
+            Name(id='Any', ctx=Load())],
+          ctx=Load()),
+        ctx=Load()))])

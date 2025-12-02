@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - log_orchestration_metrics\nImplements L1 Cognitive Planning Layer for log orchestration metrics operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass LogOrchestrationMetricsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass LogOrchestrationMetricsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass LogOrchestrationMetricsPlanResult:\n    \"\"\"L5 Result structure with full type safe",
+  "full_hash": "29dbcf10403a3d347b74e8424c40eb63bc0808b60ffd7d8ba45933a1350fdcee",
+  "generated_at": 1764703990.0250878,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\inspect-phase\\find-resume-problems\\general\\update-memory\\log_orchestration_metrics.py"
+}

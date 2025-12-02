@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"word_count\": 12,\n  \"unique_words\": 9,\n  \"generated_at\": 1764702817.810526,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Monolith\\\\04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.safety.json\"\n}",
+  "full_hash": "12c35e69552f45609a822d90b6957a4bc480c286869c1dfd3f09fd93ad665a6a",
+  "generated_at": 1764703165.2781227,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.safety.embedding.meta.json"
+}

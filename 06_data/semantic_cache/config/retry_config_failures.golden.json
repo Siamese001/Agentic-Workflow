@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - retry_config_failures\nImplements L1 Cognitive Planning Layer for retry config failures operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RetryConfigFailuresOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RetryConfigFailuresOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RetryConfigFailuresOrchestratorResult:\n    \"\"\"L5 Result structure with full type ",
+  "full_hash": "617a2af0c27c523919bc644fc36b5582ff7d36d89ebefcdac85e0afa789c051b",
+  "generated_at": 1764703110.0621004,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\orc-layer\\act-phase\\use-config-tools\\routing\\retry-task\\retry_config_failures.py"
+}

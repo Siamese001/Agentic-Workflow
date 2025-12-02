@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"word_count\": 238,\n  \"unique_words\": 159,\n  \"generated_at\": 1764702986.3630037,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\04_testing_autorepair.md\"\n}",
+  "full_hash": "1c3cd5f6dc013664b2a3db5718c0cc1aa8efce1aa4277fca84cea970ae94bef2",
+  "generated_at": 1764703653.7700279,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\04_testing_autorepair.embedding.meta.json"
+}

@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0'),
+          Constant(value=822),
+          Constant(value=1764702986.3748753),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\05_tooling_mcp_observability.md'),
+          Name(id='true', ctx=Load())]))])

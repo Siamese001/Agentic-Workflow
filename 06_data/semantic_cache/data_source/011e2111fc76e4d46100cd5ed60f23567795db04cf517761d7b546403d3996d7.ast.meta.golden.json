@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\v10.7\\\\Agentic-Workflow\\\\strategy_ensemble_v10_7.py\",\n  \"file_hash\": \"011e2111fc76e4d46100cd5ed60f23567795db04cf517761d7b546403d3996d7\",\n  \"size_bytes\": 13825,\n  \"last_modified\": \"2025-12-01T12:27:37.341469\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"v10.7\",\n  \"file_extension\": \".py\"\n}",
+  "full_hash": "0029c29d41e321de23942b84e2d039d922fa393dcf67a0a83b66f9cda069d8be",
+  "generated_at": 1764703889.3434353,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\011e2111fc76e4d46100cd5ed60f23567795db04cf517761d7b546403d3996d7.ast.meta.json"
+}

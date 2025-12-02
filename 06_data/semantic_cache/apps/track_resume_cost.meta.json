@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\safe-layer\\safety-phase\\manage-resume-costs\\general\\update-memory\\track_resume_cost.py",
+    "rel_path": "track_resume_cost.py",
+    "root_name": "apps",
+    "file_hash": "e290751b2a7afbd15a7a07343f5d4243cc712345418729829301fe7ead3b170d",
+    "file_size": 11236,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 6
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703990.7806995
+}

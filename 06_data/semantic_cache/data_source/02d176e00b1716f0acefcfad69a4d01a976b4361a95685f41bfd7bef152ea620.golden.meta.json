@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\02d176e00b1716f0acefcfad69a4d01a976b4361a95685f41bfd7bef152ea620.golden.json",
+    "rel_path": "02d176e00b1716f0acefcfad69a4d01a976b4361a95685f41bfd7bef152ea620.golden.json",
+    "root_name": "data_source",
+    "file_hash": "0817b6b9ce58c1f8b98e8d910767cb3cd9ee8c540c63170df5ca376a2fe5a3c6",
+    "file_size": 3005,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703653.2365348
+}

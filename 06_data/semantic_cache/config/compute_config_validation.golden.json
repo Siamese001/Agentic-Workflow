@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - compute_config_validation\nImplements L1 Cognitive Planning Layer for compute config validation operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ComputeConfigValidationPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ComputeConfigValidationPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ComputeConfigValidationPlanResult:\n    \"\"\"L5 Result structure with full type safe",
+  "full_hash": "3258dd2239a1fd01d3d1f4496a416e365f51710c4c59d71721d28567023777e3",
+  "generated_at": 1764703110.5206027,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\validate-phase\\check-config-structure\\semantic\\adjust-scores\\compute_config_validation.py"
+}

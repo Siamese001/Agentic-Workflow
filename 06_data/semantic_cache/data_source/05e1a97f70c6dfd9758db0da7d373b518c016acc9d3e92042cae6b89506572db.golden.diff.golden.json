@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"baseline_hash\": \"\",\n  \"current_hash\": \"c7524cb5c67156a25578f0543b27cf2a524282f80c9f6b31e5db40925f73b82f\",\n  \"diff_type\": \"initial\",\n  \"generated_at\": 1764702818.4424496,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Old Resume Gen Python\\\\05e1a97f70c6dfd9758db0da7d373b518c016acc9d3e92042cae6b89506572db.golden.json\"\n}",
+  "full_hash": "0adca6d53898b2c1d3c1263b7d5a62c7d15c1a132f6ce34b1180150698a316eb",
+  "generated_at": 1764703166.9975834,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\05e1a97f70c6dfd9758db0da7d373b518c016acc9d3e92042cae6b89506572db.golden.diff.json"
+}

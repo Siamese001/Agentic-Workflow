@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\infra\\\\context_engine\\\\slots.py\",\n  \"file_hash\": \"0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063\",\n  \"size_bytes\": 854,\n  \"last_modified\": \"2025-12-01T12:27:38.661256\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_11\",\n  \"file_extension\": \".py\"\n}",
+  "full_hash": "da92991870619595ea4c2c1289b0ce3c78e18b0f549f47af5cc704b8c19de895",
+  "generated_at": 1764703653.8874543,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\0525558b14567294344d5a3a554425312101e790505c193ffb55b5159136f063.ast.meta.json"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - invoke_resume_actions\nImplements L1 Cognitive Planning Layer for invoke resume actions operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass InvokeResumeActionsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass InvokeResumeActionsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass InvokeResumeActionsOrchestratorResult:\n    \"\"\"L5 Result structure with full type ",
+  "full_hash": "8450dcb38db0a35ca14e7fdc2eae740ce2d729a91335c9d6e553520053e48c8e",
+  "generated_at": 1764703989.2456815,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\act-phase\\use-resume-tools\\general\\use-a-tool\\invoke_resume_actions.py"
+}

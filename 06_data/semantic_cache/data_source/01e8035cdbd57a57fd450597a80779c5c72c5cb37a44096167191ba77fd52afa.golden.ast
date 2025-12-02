@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='from __future__ import annotations\nfrom typing import List, Optional\nfrom pydantic import BaseModel, Field\nclass Hypothesis(BaseModel):\n"""Lightweight hypothesis used by the metacognition layer."""\nid: str\nagent_id: str\ncontent: str\nconfidence: float = 0.0\nevidence_ids: List[str] = Field(default_factory=list)\nrationale: Optional[str] = None\nclass MetacognitionReport(BaseModel):\n"""Aggregate view over a set of hypotheses and signals."""\nhypotheses: List[Hypothesis] = Field(default_factory=list)\nglobal_confidence: float = 0.0\nuncertainty_score: float = 0.0\nissues_detected: List[str] = Field(default_factory=list)'),
+          Constant(value='class:Hypothesis;class:MetacognitionReport'),
+          Constant(value='module_imports'),
+          Constant(value='public_methods:'),
+          List(ctx=Load())]))])

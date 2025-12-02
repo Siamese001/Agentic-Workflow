@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\v2\\hyphenation_rules.json'),
+          Constant(value='047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457'),
+          Constant(value=1342),
+          Constant(value='2025-12-01T12:27:36.981682'),
+          Constant(value='RG'),
+          Constant(value='v2'),
+          Constant(value='.json')]))])

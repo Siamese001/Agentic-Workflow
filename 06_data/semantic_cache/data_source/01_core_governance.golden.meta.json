@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\01_core_governance.golden.json",
+    "rel_path": "01_core_governance.golden.json",
+    "root_name": "data_source",
+    "file_hash": "1f2e336dca33ab31d3bccc317fa99f932e41784687836abc33b798497e967eb1",
+    "file_size": 1321,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703653.1376135
+}

@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='39fab6c6c7149715fb34990fd7a157d3f40f3c52a0638036ab50db8d1466559b'),
+          Constant(value=529),
+          Constant(value=1764702818.3569658),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\05a952782907178460c225892c239abd7dae1a27775e2a7ae4de118c61e4f454.embedding'),
+          Name(id='true', ctx=Load())]))])

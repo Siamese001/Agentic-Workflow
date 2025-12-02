@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": true,
+  "line_count": 307,
+  "generated_at": 1764703110.8914397,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\safe-layer\\safety-phase\\manage-config-costs\\general\\update-memory\\enforce_config_budget.py"
+}

@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 361,
+  "generated_at": 1764703988.8949187,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\retriever-microagent-layer\\validate-phase-group\\retrieval-ops\\general-operations-ops\\utility-functions-ops\\outreach_response.json"
+}

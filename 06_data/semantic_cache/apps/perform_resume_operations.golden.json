@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - perform_resume_operations\nImplements L1 Cognitive Planning Layer for perform resume operations operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass PerformResumeOperationsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass PerformResumeOperationsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass PerformResumeOperationsOrchestratorResult:\n    \"\"\"L5 Result struc",
+  "full_hash": "8650c0d477e9c7bc0dd937ebd1a8b46d70d1b3f064f2d5ff602cc6ac1114e594",
+  "generated_at": 1764703989.267526,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\act-phase\\use-resume-tools\\general\\use-a-tool\\perform_resume_operations.py"
+}

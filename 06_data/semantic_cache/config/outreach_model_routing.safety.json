@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 117,
+  "generated_at": 1764703109.5999699,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\budget-manager-layer\\rank-phase-group\\tool-adapter-ops\\general-operations-ops\\utility-functions-ops\\outreach_model_routing.yaml"
+}

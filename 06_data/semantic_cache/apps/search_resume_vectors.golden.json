@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - search_resume_vectors\nImplements L1 Cognitive Planning Layer for search resume vectors operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass SearchResumeVectorsMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass SearchResumeVectorsMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass SearchResumeVectorsMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succ",
+  "full_hash": "669ab35b6ab1a3a7ca1640506e4c4270379d6c2769f927cffa1921022bfb40d9",
+  "generated_at": 1764703989.141073,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\mem-layer\\retrieve-phase\\get-resume-info\\embedding\\compare-meaning\\search_resume_vectors.py"
+}

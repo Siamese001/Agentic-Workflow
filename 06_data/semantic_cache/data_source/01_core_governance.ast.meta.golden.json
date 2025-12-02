@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"error\": \"invalid character '\\u2192' (U+2192) (<unknown>, line 9)\"\n}",
+  "full_hash": "58e7a569717b910b95d2a41e14b57fe3bf361cbddeb1ac0201c4e7698a92e446",
+  "generated_at": 1764703653.0512574,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\01_core_governance.ast.meta.json"
+}

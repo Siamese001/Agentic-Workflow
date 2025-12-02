@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - track_config_usage\nImplements L5 Safety/Policy Layer for track config usage operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass TrackConfigUsageSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass TrackConfigUsageSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass TrackConfigUsageSafetyResult:\n    \"\"\"L5 Safety result with full type saf",
+  "full_hash": "111251411c3c4cce39e64da5dc3dbf879a2a67fb32ad19127bfbda811c1a65de",
+  "generated_at": 1764703110.2161946,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\orc-layer\\safety-phase\\manage-config-costs\\general\\update-memory\\track_config_usage.py"
+}

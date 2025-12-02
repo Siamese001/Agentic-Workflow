@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": true,
+  "has_system_calls": false,
+  "line_count": 128,
+  "generated_at": 1764703109.9490416,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\observer-microagent-layer\\act-phase-group\\schema-validation-ops\\general-operations-ops\\utility-functions-ops\\outreach_style.yaml"
+}

@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764703110.4296076,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\refine-phase\\pick-best-result\\general\\understand-request\\rank_config_components.py"
+}

@@ -1,0 +1,856 @@
+Module(
+  body=[
+    ImportFrom(
+      module='typing',
+      names=[
+        alias(name='Dict'),
+        alias(name='Any')],
+      level=0),
+    ImportFrom(
+      module='lic_plan_schema',
+      names=[
+        alias(name='LICPlan'),
+        alias(name='RoutingPlan'),
+        alias(name='RetrievalPlan'),
+        alias(name='InsightPlan'),
+        alias(name='KNodePlan'),
+        alias(name='TonePlan'),
+        alias(name='CTAPlan'),
+        alias(name='ConstraintPlan'),
+        alias(name='ValidatorPlan'),
+        alias(name='FamilyPlan'),
+        alias(name='ScenarioPlan'),
+        alias(name='SeniorityPlan'),
+        alias(name='TemplatePlan'),
+        alias(name='MissionPlan'),
+        alias(name='RouteType')],
+      level=1),
+    ClassDef(
+      name='LICPlanner',
+      body=[
+        FunctionDef(
+          name='__init__',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='spec',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Store())],
+              value=Name(id='spec', ctx=Load()))]),
+        FunctionDef(
+          name='build_routing_plan',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='message_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='routing_config', ctx=Store())],
+              value=Subscript(
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='spec',
+                    ctx=Load()),
+                  slice=Constant(value='routing'),
+                  ctx=Load()),
+                slice=Name(id='message_type', ctx=Load()),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='RoutingPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='route',
+                    value=Call(
+                      func=Name(id='RouteType', ctx=Load()),
+                      args=[
+                        Name(id='message_type', ctx=Load())])),
+                  keyword(
+                    arg='conditions',
+                    value=Subscript(
+                      value=Name(id='routing_config', ctx=Load()),
+                      slice=Constant(value='conditions'),
+                      ctx=Load())),
+                  keyword(
+                    arg='constraints',
+                    value=Subscript(
+                      value=Name(id='routing_config', ctx=Load()),
+                      slice=Constant(value='constraints'),
+                      ctx=Load()))]))],
+          returns=Name(id='RoutingPlan', ctx=Load())),
+        FunctionDef(
+          name='build_parameter_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Return(
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='parameters'),
+                ctx=Load()))],
+          returns=Subscript(
+            value=Name(id='Dict', ctx=Load()),
+            slice=Tuple(
+              elts=[
+                Name(id='str', ctx=Load()),
+                Name(id='Any', ctx=Load())],
+              ctx=Load()),
+            ctx=Load())),
+        FunctionDef(
+          name='build_retrieval_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='rag_config', ctx=Store())],
+              value=Subscript(
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='spec',
+                    ctx=Load()),
+                  slice=Constant(value='retrieval'),
+                  ctx=Load()),
+                slice=Constant(value='rag_pipeline_v75'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='RetrievalPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='hyde_enabled',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_0_hyde'),
+                        ctx=Load()),
+                      slice=Constant(value='enabled'),
+                      ctx=Load())),
+                  keyword(
+                    arg='hyde_trigger',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_0_hyde'),
+                        ctx=Load()),
+                      slice=Constant(value='trigger'),
+                      ctx=Load())),
+                  keyword(
+                    arg='web_search_calls',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_1_hybrid_recall'),
+                        ctx=Load()),
+                      slice=Constant(value='web_search_calls'),
+                      ctx=Load())),
+                  keyword(
+                    arg='internal_sources',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_1_hybrid_recall'),
+                        ctx=Load()),
+                      slice=Constant(value='internal_sources'),
+                      ctx=Load())),
+                  keyword(
+                    arg='reranking_model',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_2_cross_encoder_reranking'),
+                        ctx=Load()),
+                      slice=Constant(value='model'),
+                      ctx=Load())),
+                  keyword(
+                    arg='reranking_threshold',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_2_cross_encoder_reranking'),
+                        ctx=Load()),
+                      slice=Constant(value='threshold'),
+                      ctx=Load())),
+                  keyword(
+                    arg='self_rag_max_hops',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_3_self_rag'),
+                        ctx=Load()),
+                      slice=Constant(value='max_hops'),
+                      ctx=Load())),
+                  keyword(
+                    arg='episodic_memory_enabled',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_4_episodic_memory'),
+                        ctx=Load()),
+                      slice=Constant(value='enabled'),
+                      ctx=Load())),
+                  keyword(
+                    arg='knowledge_graph_enabled',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_5_knowledge_graph'),
+                        ctx=Load()),
+                      slice=Constant(value='enabled'),
+                      ctx=Load())),
+                  keyword(
+                    arg='few_shot_enabled',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='rag_config', ctx=Load()),
+                        slice=Constant(value='stage_6_few_shot_injection'),
+                        ctx=Load()),
+                      slice=Constant(value='enabled'),
+                      ctx=Load()))]))],
+          returns=Name(id='RetrievalPlan', ctx=Load())),
+        FunctionDef(
+          name='build_insight_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='signal_config', ctx=Store())],
+              value=Subscript(
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='spec',
+                    ctx=Load()),
+                  slice=Constant(value='insights'),
+                  ctx=Load()),
+                slice=Constant(value='signal_quality_scorer'),
+                ctx=Load())),
+            Assign(
+              targets=[
+                Name(id='confidence_config', ctx=Store())],
+              value=Subscript(
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='spec',
+                    ctx=Load()),
+                  slice=Constant(value='insights'),
+                  ctx=Load()),
+                slice=Constant(value='claim_confidence_scorer'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='InsightPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='signal_weights',
+                    value=Subscript(
+                      value=Name(id='signal_config', ctx=Load()),
+                      slice=Constant(value='source_weights'),
+                      ctx=Load())),
+                  keyword(
+                    arg='min_signal_threshold',
+                    value=Subscript(
+                      value=Name(id='signal_config', ctx=Load()),
+                      slice=Constant(value='minimum_signal_threshold'),
+                      ctx=Load())),
+                  keyword(
+                    arg='per_claim_min_confidence',
+                    value=Subscript(
+                      value=Name(id='confidence_config', ctx=Load()),
+                      slice=Constant(value='per_claim_minimum'),
+                      ctx=Load())),
+                  keyword(
+                    arg='aggregate_min_confidence',
+                    value=Subscript(
+                      value=Name(id='confidence_config', ctx=Load()),
+                      slice=Constant(value='aggregate_minimum'),
+                      ctx=Load())),
+                  keyword(
+                    arg='confidence_enforcement',
+                    value=Subscript(
+                      value=Name(id='confidence_config', ctx=Load()),
+                      slice=Constant(value='enforcement'),
+                      ctx=Load()))]))],
+          returns=Name(id='InsightPlan', ctx=Load())),
+        FunctionDef(
+          name='build_knode_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='knode_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='k_nodes'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='KNodePlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='hop_order',
+                    value=Subscript(
+                      value=Name(id='knode_config', ctx=Load()),
+                      slice=Constant(value='hop_execution_order'),
+                      ctx=Load())),
+                  keyword(
+                    arg='assembly_policy',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='knode_config', ctx=Load()),
+                        slice=Constant(value='assembly_engine'),
+                        ctx=Load()),
+                      slice=Constant(value='policy'),
+                      ctx=Load())),
+                  keyword(
+                    arg='validation_gates',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='knode_config', ctx=Load()),
+                        slice=Constant(value='assembly_engine'),
+                        ctx=Load()),
+                      slice=Constant(value='validation_gates'),
+                      ctx=Load()))]))],
+          returns=Name(id='KNodePlan', ctx=Load())),
+        FunctionDef(
+          name='build_constraint_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='constraint_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='constraints'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='ConstraintPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='forbidden_verbs',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='constraint_config', ctx=Load()),
+                        slice=Constant(value='content_cleanliness'),
+                        ctx=Load()),
+                      slice=Constant(value='forbidden_verbs'),
+                      ctx=Load())),
+                  keyword(
+                    arg='filler_patterns',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='constraint_config', ctx=Load()),
+                        slice=Constant(value='content_cleanliness'),
+                        ctx=Load()),
+                      slice=Constant(value='filler_patterns'),
+                      ctx=Load())),
+                  keyword(
+                    arg='placeholder_patterns',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='constraint_config', ctx=Load()),
+                        slice=Constant(value='content_cleanliness'),
+                        ctx=Load()),
+                      slice=Constant(value='placeholder_patterns'),
+                      ctx=Load())),
+                  keyword(
+                    arg='word_count_tolerance',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='constraint_config', ctx=Load()),
+                        slice=Constant(value='structural_validation'),
+                        ctx=Load()),
+                      slice=Constant(value='word_count_tolerance'),
+                      ctx=Load())),
+                  keyword(
+                    arg='ascii_rules',
+                    value=Subscript(
+                      value=Subscript(
+                        value=Name(id='constraint_config', ctx=Load()),
+                        slice=Constant(value='ascii_hygiene'),
+                        ctx=Load()),
+                      slice=Constant(value='rules'),
+                      ctx=Load()))]))],
+          returns=Name(id='ConstraintPlan', ctx=Load())),
+        FunctionDef(
+          name='build_tone_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='tone_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='tone'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='TonePlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='archetype_mappings',
+                    value=Subscript(
+                      value=Name(id='tone_config', ctx=Load()),
+                      slice=Constant(value='archetype_tone_mappings'),
+                      ctx=Load())),
+                  keyword(
+                    arg='language_adaptation',
+                    value=Subscript(
+                      value=Name(id='tone_config', ctx=Load()),
+                      slice=Constant(value='language_matcher'),
+                      ctx=Load()))]))],
+          returns=Name(id='TonePlan', ctx=Load())),
+        FunctionDef(
+          name='build_cta_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='cta_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='cta'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='CTAPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='archetype_styles',
+                    value=Subscript(
+                      value=Name(id='cta_config', ctx=Load()),
+                      slice=Constant(value='archetype_specific'),
+                      ctx=Load())),
+                  keyword(
+                    arg='date_window_rules',
+                    value=Subscript(
+                      value=Name(id='cta_config', ctx=Load()),
+                      slice=Constant(value='date_window_engine'),
+                      ctx=Load()))]))],
+          returns=Name(id='CTAPlan', ctx=Load())),
+        FunctionDef(
+          name='build_validator_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='validator_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='validators'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='ValidatorPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='error_codes',
+                    value=Subscript(
+                      value=Name(id='validator_config', ctx=Load()),
+                      slice=Constant(value='error_code_registry'),
+                      ctx=Load())),
+                  keyword(
+                    arg='severity_thresholds',
+                    value=Subscript(
+                      value=Name(id='validator_config', ctx=Load()),
+                      slice=Constant(value='validation_severity_thresholds'),
+                      ctx=Load())),
+                  keyword(
+                    arg='master_gate',
+                    value=Subscript(
+                      value=Name(id='validator_config', ctx=Load()),
+                      slice=Constant(value='master_validation_gate'),
+                      ctx=Load()))]))],
+          returns=Name(id='ValidatorPlan', ctx=Load())),
+        FunctionDef(
+          name='build_family_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='family_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='families'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='FamilyPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='archetype_templates',
+                    value=Subscript(
+                      value=Name(id='family_config', ctx=Load()),
+                      slice=Constant(value='archetype_generation_templates'),
+                      ctx=Load())),
+                  keyword(
+                    arg='signature_formats',
+                    value=Subscript(
+                      value=Name(id='family_config', ctx=Load()),
+                      slice=Constant(value='signature_formats'),
+                      ctx=Load()))]))],
+          returns=Name(id='FamilyPlan', ctx=Load())),
+        FunctionDef(
+          name='build_scenario_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='scenario_config', ctx=Store())],
+              value=Subscript(
+                value=Subscript(
+                  value=Attribute(
+                    value=Name(id='self', ctx=Load()),
+                    attr='spec',
+                    ctx=Load()),
+                  slice=Constant(value='scenarios'),
+                  ctx=Load()),
+                slice=Constant(value='entity_grounding_framework'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='ScenarioPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='entity_grounding',
+                    value=Subscript(
+                      value=Name(id='scenario_config', ctx=Load()),
+                      slice=Constant(value='pre_generation_extraction'),
+                      ctx=Load())),
+                  keyword(
+                    arg='team_whitelist',
+                    value=Subscript(
+                      value=Name(id='scenario_config', ctx=Load()),
+                      slice=Constant(value='team_whitelist'),
+                      ctx=Load())),
+                  keyword(
+                    arg='generation_constraints',
+                    value=Subscript(
+                      value=Name(id='scenario_config', ctx=Load()),
+                      slice=Constant(value='generation_constraints'),
+                      ctx=Load()))]))],
+          returns=Name(id='ScenarioPlan', ctx=Load())),
+        FunctionDef(
+          name='build_seniority_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='seniority_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='seniority'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='SeniorityPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='taxonomy',
+                    value=Subscript(
+                      value=Name(id='seniority_config', ctx=Load()),
+                      slice=Constant(value='recipient_classifier_taxonomy'),
+                      ctx=Load())),
+                  keyword(
+                    arg='classification_rules',
+                    value=Subscript(
+                      value=Name(id='seniority_config', ctx=Load()),
+                      slice=Constant(value='deterministic_classification_v1'),
+                      ctx=Load())),
+                  keyword(
+                    arg='default_archetype',
+                    value=Subscript(
+                      value=Name(id='seniority_config', ctx=Load()),
+                      slice=Constant(value='default_archetype'),
+                      ctx=Load())),
+                  keyword(
+                    arg='default_confidence',
+                    value=Subscript(
+                      value=Name(id='seniority_config', ctx=Load()),
+                      slice=Constant(value='default_confidence'),
+                      ctx=Load()))]))],
+          returns=Name(id='SeniorityPlan', ctx=Load())),
+        FunctionDef(
+          name='build_template_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='template_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='templates'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='TemplatePlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='cta_templates',
+                    value=Subscript(
+                      value=Name(id='template_config', ctx=Load()),
+                      slice=Constant(value='cta_templates'),
+                      ctx=Load())),
+                  keyword(
+                    arg='system_prompt',
+                    value=Subscript(
+                      value=Name(id='template_config', ctx=Load()),
+                      slice=Constant(value='generation_system_prompt'),
+                      ctx=Load())),
+                  keyword(
+                    arg='greeting_templates',
+                    value=Subscript(
+                      value=Name(id='template_config', ctx=Load()),
+                      slice=Constant(value='greeting_templates'),
+                      ctx=Load()))]))],
+          returns=Name(id='TemplatePlan', ctx=Load())),
+        FunctionDef(
+          name='build_mission_plan',
+          args=arguments(
+            args=[
+              arg(arg='self')]),
+          body=[
+            Assign(
+              targets=[
+                Name(id='mission_config', ctx=Store())],
+              value=Subscript(
+                value=Attribute(
+                  value=Name(id='self', ctx=Load()),
+                  attr='spec',
+                  ctx=Load()),
+                slice=Constant(value='mission'),
+                ctx=Load())),
+            Return(
+              value=Call(
+                func=Name(id='MissionPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='sender_structure',
+                    value=Subscript(
+                      value=Name(id='mission_config', ctx=Load()),
+                      slice=Constant(value='sender_profile_structure'),
+                      ctx=Load())),
+                  keyword(
+                    arg='recipient_structure',
+                    value=Subscript(
+                      value=Name(id='mission_config', ctx=Load()),
+                      slice=Constant(value='recipient_profile_structure'),
+                      ctx=Load())),
+                  keyword(
+                    arg='job_description_structure',
+                    value=Subscript(
+                      value=Name(id='mission_config', ctx=Load()),
+                      slice=Constant(value='job_description_structure'),
+                      ctx=Load())),
+                  keyword(
+                    arg='message_context_structure',
+                    value=Subscript(
+                      value=Name(id='mission_config', ctx=Load()),
+                      slice=Constant(value='message_context_structure'),
+                      ctx=Load()))]))],
+          returns=Name(id='MissionPlan', ctx=Load())),
+        FunctionDef(
+          name='build_complete_plan',
+          args=arguments(
+            args=[
+              arg(arg='self'),
+              arg(
+                arg='message_type',
+                annotation=Name(id='str', ctx=Load())),
+              arg(
+                arg='message_context',
+                annotation=Subscript(
+                  value=Name(id='Dict', ctx=Load()),
+                  slice=Tuple(
+                    elts=[
+                      Name(id='str', ctx=Load()),
+                      Name(id='Any', ctx=Load())],
+                    ctx=Load()),
+                  ctx=Load()))]),
+          body=[
+            Return(
+              value=Call(
+                func=Name(id='LICPlan', ctx=Load()),
+                keywords=[
+                  keyword(
+                    arg='routing',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_routing_plan',
+                        ctx=Load()),
+                      args=[
+                        Name(id='message_type', ctx=Load()),
+                        Name(id='message_context', ctx=Load())])),
+                  keyword(
+                    arg='parameters',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_parameter_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='retrieval',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_retrieval_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='insights',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_insight_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='k_nodes',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_knode_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='constraints',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_constraint_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='tone',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_tone_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='cta',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_cta_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='validators',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_validator_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='families',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_family_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='scenarios',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_scenario_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='seniority',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_seniority_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='templates',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_template_plan',
+                        ctx=Load()))),
+                  keyword(
+                    arg='mission',
+                    value=Call(
+                      func=Attribute(
+                        value=Name(id='self', ctx=Load()),
+                        attr='build_mission_plan',
+                        ctx=Load())))]))],
+          returns=Name(id='LICPlan', ctx=Load()))])])

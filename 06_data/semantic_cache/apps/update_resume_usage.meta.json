@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\safe-layer\\safety-phase\\manage-resume-costs\\general\\update-memory\\update_resume_usage.py",
+    "rel_path": "update_resume_usage.py",
+    "root_name": "apps",
+    "file_hash": "dd86da587c5d36f90f26ef6a30a3981e6d4189441184373ef149b5fc6306af98",
+    "file_size": 11284,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 6
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703990.8064845
+}

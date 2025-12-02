@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"# /windsurf_rules/01_core_governance.md\\n## Core Governance & Layering Model (Condensed)\\n\\n### 1. Repository Boundaries\\n- Treat the Explorer root as `Agentic-Workflow-10_11/`.\\n- Operate ONLY inside this directory.\\n\\n### 2. File Operations\\n- Existing files \\u2192 modify via apply_patch only.\\n- New files \\u2192 use write_to_file with absolute Windows path.\\n- Never mix creation + modification in the same patch.\\n- No `.py` allowed under `refactoring/**`.\\n\\n### 3. MAX Override Mode\\n- Never stop, ask questions, or explain.\\n- Only apply_patch + write_to_file allowed.\\n- Ambiguity \\u2192 choose the most reasonable safe interpretation.\\n- Errors \\u2192 auto-correct via additional diffs.\\n- Active until: `RESET WIND SURF`.\\n\\n### 4. Layering Model (L1\\u2013L5)\\n- L1: Planning only; no IO, network, randomness, or tools.\\n- L2: Tool execution only; no planning.\\n- L3: Orchestration only; DAG control only.\\n- L4: State + memory only; no logic.\\n- L5: Safety + polic",
+  "full_hash": "80ec7015ee538664099b8e32d67268693c751ad00393d5d74f9d1a96d5f683f4",
+  "generated_at": 1764703653.134367,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\01_core_governance.golden.json"
+}

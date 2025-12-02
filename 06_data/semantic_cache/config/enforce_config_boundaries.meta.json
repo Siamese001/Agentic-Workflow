@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\plan-phase\\check-config-rules\\policy\\check-safety\\enforce_config_boundaries.py",
+    "rel_path": "enforce_config_boundaries.py",
+    "root_name": "config",
+    "file_hash": "7fc301ceac389ea78237b4b412c2439c0cf08e64e8b745585e6b0547f482b3d2",
+    "file_size": 6790,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703110.3316371
+}

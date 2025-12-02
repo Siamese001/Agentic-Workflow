@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"has_executable_calls\": false,\n  \"has_file_operations\": false,\n  \"has_network_calls\": false,\n  \"has_system_calls\": false,\n  \"line_count\": 37,\n  \"generated_at\": 1764702986.3493352,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\02_structure_prompts_memory.md\"\n}",
+  "full_hash": "f6709f87e172c19d9d9bfadf2134dcd837fe957370ba6dfbf059972c474fc401",
+  "generated_at": 1764703653.4143028,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\02_structure_prompts_memory.safety.json"
+}

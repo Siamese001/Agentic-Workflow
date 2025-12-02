@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\03_dag_workflow_topology.meta.json",
+    "rel_path": "03_dag_workflow_topology.meta.json",
+    "root_name": "data_source",
+    "file_hash": "5133debb2f9ae412fc681fc08a6740fac0cee112b4ea360801a6004a66ae3f1e",
+    "file_size": 605,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703653.6818488
+}

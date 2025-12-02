@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\orc-layer\\safety-phase\\manage-config-costs\\general\\update-memory\\enforce_config_limits.py",
+    "rel_path": "enforce_config_limits.py",
+    "root_name": "config",
+    "file_hash": "bb6782f2ef5496dba481d00dc7ec3f8b247c571f452f3cc26feabb97d99dbc90",
+    "file_size": 11332,
+    "is_eligible": true,
+    "file_type": ".py",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703110.20352
+}

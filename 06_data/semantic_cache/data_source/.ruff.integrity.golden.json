@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_hash\": \"26e7cf3f493ccd02e11283fef307b290418de67c97eff12c75ef8445c3d18b36\",\n  \"file_size\": 584,\n  \"generated_at\": 1764703093.0468466,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\v10.7\\\\Agentic-Workflow\\\\.ruff.toml\",\n  \"verified\": true\n}",
+  "full_hash": "b8ae97f0352572cdef8645ff5dd69d357445014a983e90033334635aa30a52bc",
+  "generated_at": 1764703889.3306384,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\.ruff.integrity.json"
+}

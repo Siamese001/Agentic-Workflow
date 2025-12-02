@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - build_config_orchestration\nImplements L1 Cognitive Planning Layer for build config orchestration operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass BuildConfigOrchestrationOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass BuildConfigOrchestrationOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass BuildConfigOrchestrationOrchestratorResult:\n    \"\"\"L5 Result ",
+  "full_hash": "c5a8ac1c3b6c7f040a3e031ee7422474ef751d469980e4e6f3c3243b6f708d52",
+  "generated_at": 1764703110.114319,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\orc-layer\\plan-phase\\get-config-info\\utility\\prepare-information\\build_config_orchestration.py"
+}

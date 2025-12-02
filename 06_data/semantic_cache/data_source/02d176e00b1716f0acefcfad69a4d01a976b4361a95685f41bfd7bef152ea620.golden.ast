@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='"""\nOrchestration layer error definitions.\nThis module provides error classes specific to orchestration operations,\nmoved from core/errors.py during canonical structure cleanup.\n"""\nfrom __future__ import annotations\nfrom enum import Enum\nfrom typing import Any, Dict, Optional\nfrom dataclasses import dataclass\nclass ErrorSeverity(str, Enum):\n"""Severity levels for workflow errors."""\nLOW = "low"\nMEDIUM = "medium"\nHIGH = "high"\nCRITICAL = "critical"\nclass WorkflowErrorCode(str, Enum):\n"""Standard error codes for workflow operations."""\nNODE_EXECUTION_FAILED = "node_execution_failed"\nSAFETY_VIOLATION = "safety_violation"\nSTATE_TRANSITION_FAILED = "state_transition_failed"\nTIMEOUT = "timeout"\nRESOURCE_EXHAUSTED = "resource_exhausted"\nVALIDATION_FAILED = "validation_failed"\nDEPENDENCY_FAILED = "dependency_failed"\nCONFIGURATION_ERROR = "configuration_error"\n@dataclass\nclass ErrorContext:\n"""Context information for workflow errors."""\nnode_id: Optional[str] = None\nworkflow_id: Optional[str] = None\nexecution_id: Optional[str] = None\ntimestamp: Optional[str] = None\nadditional_data: Optional[Dict[str, Any]] = None\nclass WorkflowError(Exception):\n"""Base class for all workflow-related errors."""\ndef __init__(\nself,\nmessage: str,\nerror_code: Optional[WorkflowErrorCode] = None,\nseverity: ErrorSeverity = ErrorSeverity.MEDIUM,\ncontext: Optional[ErrorContext] = None,\n):\nsuper().__init__(message)\nself.error_code = error_code\nself.severity = severity\nself.context = context or ErrorContext()\nclass NodeExecutionError(WorkflowError):\n"""Raised when a node execution fails."""\ndef __init__(\nself,\nmessage: str,\nnode_id: str,\ncontext: Optional[ErrorContext] = None,\n):\nsuper().__init__(\nmessage,\nerror_code=WorkflowErrorCode.NODE_EXECUTION_FAILED,\ncontext=context,\n)\nself.node_id = node_id\nclass SafetyViolationError(WorkflowError):\n"""Raised when safety validation fails."""\ndef __init__(\nself,\nmessage: str,\nviolation_type: str,\ncontext: Optional[ErrorContext] = None,\n):\nsuper().__init__(\nmessage,\nerror_code=WorkflowErrorCode.SAFETY_VIOLATION,\nseverity=ErrorSeverity.HIGH,\ncontext=context,\n)\nself.violation_type = violation_type\nclass StateTransitionError(WorkflowError):\n"""Raised when state transition fails."""\ndef __init__(\nself,\nmessage: str,\nfrom_state: str,\nto_state: str,\ncontext: Optional[ErrorContext] = None,\n):\nsuper().__init__(\nmessage,\nerror_code=WorkflowErrorCode.STATE_TRANSITION_FAILED,\ncontext=context,\n)\nself.from_state = from_state\nself.to_state = to_state'),
+          Constant(value='func:__init__;class:ErrorSeverity;class:WorkflowErrorCode;class:ErrorContext;class:WorkflowError;class:NodeExecutionError;class:SafetyViolationError;class:StateTransitionError'),
+          Constant(value='object_oriented_with_methods'),
+          Constant(value='public_methods:'),
+          List(ctx=Load())]))])

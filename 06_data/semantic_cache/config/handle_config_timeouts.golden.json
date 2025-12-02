@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - handle_config_timeouts\nImplements L1 Cognitive Planning Layer for handle config timeouts operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass HandleConfigTimeoutsOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass HandleConfigTimeoutsOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass HandleConfigTimeoutsOrchestratorResult:\n    \"\"\"L5 Result structure with full ",
+  "full_hash": "0b74b8a00afb34207f15af1b28b30936d825eacb01d5abaa3654f2dd026ee60e",
+  "generated_at": 1764703110.0413797,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\orc-layer\\act-phase\\use-config-tools\\routing\\retry-task\\handle_config_timeouts.py"
+}

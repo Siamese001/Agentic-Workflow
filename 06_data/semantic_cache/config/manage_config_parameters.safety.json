@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": true,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 182,
+  "generated_at": 1764703110.0897455,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\orc-layer\\plan-phase\\get-config-info\\general\\understand-request\\manage_config_parameters.py"
+}

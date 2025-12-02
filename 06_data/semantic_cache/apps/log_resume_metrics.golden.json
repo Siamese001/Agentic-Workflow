@@ -1,0 +1,6 @@
+{
+  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - log_resume_metrics\nImplements L1 Cognitive Planning Layer for log resume metrics operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass LogResumeMetricsExecutorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass LogResumeMetricsExecutorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass LogResumeMetricsExecutorResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool",
+  "full_hash": "76d7cae5efe65d9a46fc917ab9a32b355d476d0155d13051dbfad45f202de96e",
+  "generated_at": 1764703989.08102,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\exec-layer\\inspect-phase\\find-resume-problems\\general\\update-memory\\log_resume_metrics.py"
+}

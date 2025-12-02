@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"has_executable_calls\": false,\n  \"has_file_operations\": false,\n  \"has_network_calls\": false,\n  \"has_system_calls\": false,\n  \"line_count\": 24,\n  \"generated_at\": 1764702986.3739812,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\05_tooling_mcp_observability.md\"\n}",
+  "full_hash": "d8823d055f07b4b971c574afed7d3bf65530f90f8cb736d73c2aff30693ac89e",
+  "generated_at": 1764703654.0904481,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\05_tooling_mcp_observability.safety.json"
+}

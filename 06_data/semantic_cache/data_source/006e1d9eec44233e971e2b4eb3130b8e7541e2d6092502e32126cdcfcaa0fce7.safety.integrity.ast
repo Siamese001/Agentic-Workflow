@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='36508b7008121bb2cd1d73e3217bf7d4f2e54605ac96d841f6476b1db04b2eb3'),
+          Constant(value=276),
+          Constant(value=1764703158.345307),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\006e1d9eec44233e971e2b4eb3130b8e7541e2d6092502e32126cdcfcaa0fce7.safety.embedding'),
+          Name(id='true', ctx=Load())]))])

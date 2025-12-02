@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 85,
+  "generated_at": 1764703109.8665645,
+  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\loaders\\Config_loaders_for_runtime\\observer-microagent-layer\\aggregate-phase-group\\state-management-ops\\general-operations-ops\\schema_loader.py"
+}

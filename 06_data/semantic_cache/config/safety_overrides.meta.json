@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\05_config\\router-microagent-layer\\validate-phase-group\\state-management-ops\\general-operations-ops\\utility-functions-ops\\safety_overrides.yaml",
+    "rel_path": "safety_overrides.yaml",
+    "root_name": "config",
+    "file_hash": "198be52aae4fcb148790b5af95ffdf6a41959e29916bd80d0bedfde3d3f20567",
+    "file_size": 17224,
+    "is_eligible": true,
+    "file_type": ".yaml",
+    "depth": 5
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703110.8020542
+}

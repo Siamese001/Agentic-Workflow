@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='39fd16cd1f3b25c58b86cc58b88c60795e2e905c0c77207bb4e57af67ffb576b'),
+          Constant(value=1597),
+          Constant(value=1764702986.7898653),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\.gitignore'),
+          Name(id='true', ctx=Load())]))])

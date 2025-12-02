@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"baseline_hash\": \"\",\n  \"current_hash\": \"ce407b498c3340117cf7b2caeccf3f8d2dcac536d2a622ffb727f33253c7374d\",\n  \"diff_type\": \"initial\",\n  \"generated_at\": 1764702986.3645816,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\04_testing_autorepair.md\"\n}",
+  "full_hash": "24d07fdbe4a2cf52cd59527427c1a653b6aed07b7fad93e843e4a65cbc0400da",
+  "generated_at": 1764703653.7332923,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\04_testing_autorepair.diff.json"
+}

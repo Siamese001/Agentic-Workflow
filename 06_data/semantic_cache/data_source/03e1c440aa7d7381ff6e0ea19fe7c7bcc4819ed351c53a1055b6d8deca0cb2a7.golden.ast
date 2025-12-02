@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='Forbidden:\n- L1→L2\n- L1→cognitive_agents\n- L2→L3 internals\n- L4→providers\n- Providers→RAG/orchestration\n- No upward-layer imports.\n- No circular imports.\n- Declare placeholders explicitly.\n- No unused or hallucinated macros.\n- Validate substitution completeness.\n- Prompts must be versioned, governed, and schema-bound.\n- Bounded lists, caches, and stores.\n- All caches must have eviction policies.\n- No unbounded embeddings or histories.\n- No orphaned async tasks.\n- Only relevant, safety-approved context may be injected.\n- RAG results must be deterministic under same inputs.\n- No infinite scroll accumulation; context must be curated.\n- Draft Planner = L1\n- Draft Executor = L2\n- Critic = L1\n- Fix Agent = L1\n- Integrated only through L3 DAG.\n- High-signal rules apply (no fluff, persona alignment, metric injection).'),
+          Constant(value=''),
+          Constant(value='module_imports'),
+          Constant(value='public_methods:'),
+          List(ctx=Load())]))])

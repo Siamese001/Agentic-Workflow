@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"phase\": \"PHASE_1C_ATOMIC_CANONICALIZATION_COMPLETE\",\n  \"timestamp\": \"2025-12-02T13:03:00Z\",\n  \"target_root\": \"01_agentic_core\",\n  \"validation_status\": {\n    \"K1\": \"PASS - PHASE_0_5_SEMANTIC_CACHE_EXISTS_BUT_NOT_REQUIRED\",\n    \"K2\": \"PASS - EXECUTION_ENVIRONMENT_IS_DOCKER\", \n    \"K3\": \"PASS - ROOT_STRUCTURE_IS_CANONICAL_10_FOLDERS\",\n    \"K4\": \"PASS - UNIFIED_STRUCTURE_SUBATOMIC_YAML_EXISTS\",\n    \"K5\": \"PASS - SSoT_YAML_PARSED_SUCCESSFULLY\",\n    \"K6\": \"PASS - SSoT_YAML_SUBTREE_FOR_TARGET_ROOT_EXISTS\",\n    \"K7\": \"PASS - SSoT_YAML_NORMALIZED(PATHS, ORDERING, DEPTH)\",\n    \"K8\": \"PASS - SSoT_YAML_CANONICALIZED_TO_YAML_TREE\",\n    \"K9\": \"PASS - YAML_DEPTH_LIMIT_NOT_EXCEEDED(<=7)\",\n    \"K10\": \"PASS - FS_SCAN_FOR_TARGET_ROOT_COMPLETES\",\n    \"K11\": \"PASS - FS_PATHS_NORMALIZED(UNIX_FORWARD_SLASH)\",\n    \"K12\": \"PASS - FS_EXCLUDES_SYSTEM_DIRS\",\n    \"K13\": \"PASS - FS_DEPTH_LIMIT_NOT_EXCEEDED(<=7)\",\n    \"K14\": \"PASS - FS_CANONICALIZED_TO_YAML_TREE\",\n    \"K15\": \"PASS - STRUCTURAL_DIFF_COMPUTED\",\n ",
+  "full_hash": "e99e93db9d529a218af6d2a7c494d2ebca41442d871a2c1e554586ab16619e6b",
+  "generated_at": 1764705212.9268367,
+  "source_file": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\agentic_core_freeze_report.json"
+}

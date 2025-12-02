@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"has_executable_calls\": false,\n  \"has_file_operations\": false,\n  \"has_network_calls\": false,\n  \"has_system_calls\": false,\n  \"line_count\": 39,\n  \"generated_at\": 1764702986.3419356,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\01_core_governance.md\"\n}",
+  "full_hash": "c6c4e044b58e33de78d442efd4af794d08d13142c4879f74042a31ba6e917093",
+  "generated_at": 1764703653.1981297,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\01_core_governance.safety.json"
+}

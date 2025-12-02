@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_9\\.gitignore.integrity.json",
+    "rel_path": ".gitignore.integrity.json",
+    "root_name": "data_source",
+    "file_hash": "8f7765dee62a9ae6048c87f3e789de77e3a09508d139cab30028c2fe1c0af6ca",
+    "file_size": 256,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703792.5465262
+}

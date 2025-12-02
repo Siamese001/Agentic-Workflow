@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"word_count\": 238,\n  \"unique_words\": 171,\n  \"generated_at\": 1764702986.3384304,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\01_core_governance.md\"\n}",
+  "full_hash": "5e75903b3333898794dea6f1b89b87a127b21f20822e554dba26b5d03b312f9a",
+  "generated_at": 1764703653.1091409,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\01_core_governance.embedding.meta.json"
+}

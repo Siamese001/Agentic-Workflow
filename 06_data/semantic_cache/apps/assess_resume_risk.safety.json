@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": true,
+  "line_count": 307,
+  "generated_at": 1764703990.6650257,
+  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\safe-layer\\safety-phase\\check-resume-rules\\semantic\\adjust-scores\\assess_resume_risk.py"
+}

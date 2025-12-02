@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"baseline_hash\": \"\",\n  \"current_hash\": \"0d6904d77c1f60f94c915db3627b5bb2385f8bdca2c9824156bdc7c7b7f3a59e\",\n  \"diff_type\": \"initial\",\n  \"generated_at\": 1764702817.802278,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Monolith\\\\04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.golden.json\"\n}",
+  "full_hash": "2cab6152cd356947dd05319e1322f2bca37c65e4aca31fd0e4d02d84cadfd457",
+  "generated_at": 1764703165.132149,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.golden.diff.json"
+}

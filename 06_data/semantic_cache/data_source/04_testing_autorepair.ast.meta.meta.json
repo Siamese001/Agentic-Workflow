@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\04_testing_autorepair.ast.meta.json",
+    "rel_path": "04_testing_autorepair.ast.meta.json",
+    "root_name": "data_source",
+    "file_hash": "a470e38ef674dc604ac9d2404fbecaaeadca78f3d2e914b96bcfed4cfbb2026a",
+    "file_size": 53,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703653.7161329
+}
