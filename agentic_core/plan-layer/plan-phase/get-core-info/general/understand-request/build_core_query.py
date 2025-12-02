@@ -1,9 +1,9 @@
 """
-L5 Implementation: serialize_execution_params
+L5 Implementation: build_core_query
 Role: L3_ORCHESTRATION
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:02:31.765138
+Generated: 2025-12-01T19:02:31.462621
 """
 
 import logging
@@ -21,8 +21,8 @@ class L3OrchestrationInterface(ABC):
         pass
 
 
-class SerializeExecutionParams:
-    """Implementation class for serialize_execution_params."""
+class BuildCoreQuery:
+    """Implementation class for build_core_query."""
 
     def fix_file(self, input_data, filepath) -> Dict[str, Any]:
         """
@@ -76,5 +76,5 @@ class SerializeExecutionParams:
             "operation": "main",
             "role": "L3_ORCHESTRATION",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:02:31.765212"
+            "timestamp": "2025-12-01T19:02:31.462966"
         }
