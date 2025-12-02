@@ -1,23 +1,28 @@
 """
 L5 Implementation: enforce_safety_budget
-Role: L3_ORCHESTRATION
+Role: L5_SAFETY_POLICY
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:12:10.520156
+Generated: 2025-12-01T19:22:07.651659
 """
 
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
-class L3OrchestrationInterface(ABC):
-    """Abstract base for L3 orchestration operations."""
+class L5SafetyInterface(ABC):
+    """Abstract base for L5 safety/policy operations."""
     
     @abstractmethod
-    def orchestrate(self, workflow: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Orchestrate workflow execution."""
+    def validate(self, operation: Dict[str, Any]) -> bool:
+        """Validate operation against safety policies."""
+        pass
+    
+    @abstractmethod
+    def enforce_policy(self, operation: Dict[str, Any]) -> Dict[str, Any]:
+        """Enforce policy on operation."""
         pass
 
 
@@ -26,7 +31,7 @@ class EnforceSafetyBudget:
 
     def fix_file(self, input_data, filepath) -> Dict[str, Any]:
         """
-        L3_ORCHESTRATION function: fix_file
+        L5_SAFETY_POLICY function: fix_file
         
         Args:
             self: Instance reference
@@ -35,16 +40,16 @@ class EnforceSafetyBudget:
         Returns:
             Dict containing operation results
         """
-        logger.info(f"Executing fix_file")
+        logger.info("Executing fix_file")
         
-        # Enhanced l3_orchestration implementation
+        # Enhanced l5_safety_policy implementation
         result = self._execute_fix_file(input_data, filepath)
         
         return result
 
     def main(self, input_data) -> Dict[str, Any]:
         """
-        L3_ORCHESTRATION function: main
+        L5_SAFETY_POLICY function: main
         
         Args:
             self: Instance reference
@@ -53,9 +58,9 @@ class EnforceSafetyBudget:
         Returns:
             Dict containing operation results
         """
-        logger.info(f"Executing main")
+        logger.info("Executing main")
         
-        # Enhanced l3_orchestration implementation
+        # Enhanced l5_safety_policy implementation
         # Source: Extracted from semantic cache
         result = self._execute_main(input_data)
         
@@ -65,16 +70,16 @@ class EnforceSafetyBudget:
     def _execute_main(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Helper method for main - contains extracted implementation
-        Role: L3_ORCHESTRATION
+        Role: L5_SAFETY_POLICY
         """
         # Implementation extracted from semantic cache
         # TODO: Integrate actual implementation with proper L5 wrapping
-        logger.debug(f"Executing helper for main")
+        logger.debug("Executing helper for main")
         
         return {
             "status": "success",
             "operation": "main",
-            "role": "L3_ORCHESTRATION",
+            "role": "L5_SAFETY_POLICY",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:12:10.520227"
+            "timestamp": "2025-12-01T19:22:07.651765"
         }
