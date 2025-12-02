@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Compatibility layer that re-exports stack agents for v10.7.\"\"\"\nfrom stacks_v10_7 import * # noqa: F401,F403\nfrom stacks_v10_7 import __all__ as _STACK_EXPORTS\nfrom core_v10_7 import wrap_mcp\n__all__ = list(_STACK_EXPORTS) + [\"wrap_mcp\"]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

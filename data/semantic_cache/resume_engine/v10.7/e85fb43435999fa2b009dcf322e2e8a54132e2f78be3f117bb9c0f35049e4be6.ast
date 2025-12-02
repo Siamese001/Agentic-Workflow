@@ -1,0 +1,49 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\telemetry_v10_7.py",
+    "file_hash": "e85fb43435999fa2b009dcf322e2e8a54132e2f78be3f117bb9c0f35049e4be6",
+    "size_bytes": 587,
+    "last_modified": "2025-12-01T12:27:37.074564",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "log_event",
+      "line_number": 13,
+      "docstring": "Emit a telemetry event while preserving local logging.",
+      "imports": [],
+      "dependencies": [
+        "emit_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "logging": [
+      "line_5"
+    ],
+    "from_typing": [
+      "line_6"
+    ],
+    "from_mcp": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "log_event": "log_event"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

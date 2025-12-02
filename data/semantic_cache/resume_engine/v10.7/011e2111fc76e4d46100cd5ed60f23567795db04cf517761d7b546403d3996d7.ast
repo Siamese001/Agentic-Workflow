@@ -1,0 +1,152 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\strategy_ensemble_v10_7.py",
+    "file_hash": "011e2111fc76e4d46100cd5ed60f23567795db04cf517761d7b546403d3996d7",
+    "size_bytes": 13825,
+    "last_modified": "2025-12-01T12:27:37.111374",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_truncate",
+      "line_number": 27,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DomainPlannerAgent",
+      "line_number": 33,
+      "docstring": "Evaluates strategic alignment with the job domain.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RiskAssessorAgent",
+      "line_number": 82,
+      "docstring": "Assesses risk and potential failure modes in the strategy.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FeasibilityAnalystAgent",
+      "line_number": 135,
+      "docstring": "Evaluates whether the plan is grounded in achievable achievements.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyScenarioSimulatorAgent",
+      "line_number": 187,
+      "docstring": "Runs lightweight scenario stress tests on a strategy plan.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyCoordinatorAgent",
+      "line_number": 265,
+      "docstring": "Coordinates specialist planner inputs and produces an aggregated plan.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 268,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "DomainPlannerAgent",
+        "FeasibilityAnalystAgent",
+        "super",
+        "StrategyScenarioSimulatorAgent",
+        "RiskAssessorAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_feedback",
+      "line_number": 343,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "sys": [
+      "line_2"
+    ],
+    "os": [
+      "line_3"
+    ],
+    "from___future__": [
+      "line_11"
+    ],
+    "asyncio": [
+      "line_13"
+    ],
+    "from_typing": [
+      "line_14"
+    ],
+    "from_core_v10_7": [
+      "line_16",
+      "line_24"
+    ]
+  },
+  "function_signatures": {
+    "_truncate": "_truncate",
+    "__init__": "__init__",
+    "_apply_feedback": "_apply_feedback"
+  },
+  "class_signatures": {
+    "DomainPlannerAgent": "DomainPlannerAgent",
+    "RiskAssessorAgent": "RiskAssessorAgent",
+    "FeasibilityAnalystAgent": "FeasibilityAnalystAgent",
+    "StrategyScenarioSimulatorAgent": "StrategyScenarioSimulatorAgent",
+    "StrategyCoordinatorAgent": "StrategyCoordinatorAgent"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 28,
+    "cognitive_complexity": 24,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

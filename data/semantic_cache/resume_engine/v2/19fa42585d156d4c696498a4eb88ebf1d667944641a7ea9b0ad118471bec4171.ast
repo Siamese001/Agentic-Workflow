@@ -1,0 +1,18 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\artist_constraints.json",
+    "file_hash": "19fa42585d156d4c696498a4eb88ebf1d667944641a7ea9b0ad118471bec4171",
+    "size_bytes": 2081,
+    "last_modified": "2025-12-01T12:27:36.981682",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".json"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "file_type": "non_python"
+  }
+}

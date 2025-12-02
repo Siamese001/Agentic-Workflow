@@ -1,0 +1,18 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\agentic_design_v10_7.md",
+    "file_hash": "9cd4ab2f4b88978bc522a3a693566f7225e5d7c77cbd0e3384bbbd1437e5d34d",
+    "size_bytes": 160910,
+    "last_modified": "2025-12-01T12:27:37.090314",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".md"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "file_type": "non_python"
+  }
+}

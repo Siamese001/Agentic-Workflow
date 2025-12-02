@@ -1,0 +1,393 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\artist_RES_v2.py",
+    "file_hash": "db31f74fb60a9784fe09efc5127c1a9b9b79db82577d696202fd148f3588c5df",
+    "size_bytes": 65630,
+    "last_modified": "2025-12-01T12:27:37.029580",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ArtistGenerator",
+      "line_number": 44,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 47,
+      "docstring": "Initialize ArtistGenerator with full application configuration.\n\nArgs:\n    master_resume: Master resume data\n    enriched_scaffold: Enriched scaffold from HOP-2\n    job_description: Raw job description text\n    thematic_analysis: ThematicAnalysis from HOP-0\n    artist_specs: artist_specs.json content\n    **kwargs: Additional parameters (company_name, previous_failures, etc.)",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "HopExecutionError",
+        "ValueError",
+        "GeminiService",
+        "CodeInterpreterTool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_section",
+      "line_number": 111,
+      "docstring": "V2-aligned generate_section. It only calls the API with pre-built context.\n\nArgs:\n    prompt: Pre-built prompt from ContextRelayLayer\n    system_prompt: System prompt from ContextRelayLayer\n    reasoning_config: Reasoning configuration\n    temperature: Temperature override\n    section_id: Section identifier for logging\n    \nReturns:\n    Generated text from API",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_convert_config_keys_to_enums",
+      "line_number": 143,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_parse_specs",
+      "line_number": 157,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "len",
+        "isinstance",
+        "AttributeError",
+        "HopExecutionError",
+        "hasattr",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_mechanical_word_count_fix",
+      "line_number": 219,
+      "docstring": "Attempts mechanical word count fixes without LLM calls (zero cost).\nPart of HOP-3 enhancement - try mechanical repair before expensive LLM retry.\n\nArgs:\n    text: Original text to fix\n    min_wc: Minimum word count target\n    max_wc: Maximum word count target\n    \nReturns:\n    Mechanically repaired text (or original if mechanical fix not possible)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_pre_flight_constraint_test",
+      "line_number": 267,
+      "docstring": "Tests if constraints are ACHIEVABLE before full generation.\nQuick check with minimal token output to validate constraint feasibility.\nv2: Simplified prompt to *only* analyze the constraints JSON, removing\nthe ambiguous \"And this task: ...\" context that confused the model.\n\nArgs:\n    section_enum: Section being generated\n    prompt: Original generation prompt (for logging only)\n    constraints: Constraint dict\n    \nReturns:\n    True if constraints are achievable, False otherwise",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate",
+      "line_number": 338,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_artist_output",
+      "line_number": 382,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "generation_method",
+        "int",
+        "HopExecutionError",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_post_process_narrative",
+      "line_number": 478,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_reasoning_config_for_section",
+      "line_number": 493,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ReasoningConfig",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_overview_wc_range",
+      "line_number": 505,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_expected_signature",
+      "line_number": 521,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_experience_snippets_for_cl",
+      "line_number": 545,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_tailored_overview_for_experience",
+      "line_number": 564,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "any",
+        "isinstance",
+        "getattr",
+        "enumerate",
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_llm_bullet_selection",
+      "line_number": 640,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "isinstance",
+        "HopExecutionError",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_rewrite_bullet_for_word_count",
+      "line_number": 657,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "len",
+        "HopExecutionError",
+        "build_generation_prompt_with_reinforced_constraints",
+        "range",
+        "min",
+        "ReasoningConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_and_potentially_rewrite_bullets",
+      "line_number": 832,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "HopExecutionError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_lightly_customized_bullets",
+      "line_number": 872,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "len",
+        "list",
+        "getattr",
+        "HopExecutionError",
+        "set",
+        "ReasoningConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_synthetic_bullets",
+      "line_number": 926,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "len",
+        "list",
+        "getattr",
+        "HopExecutionError",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_tailored_bullets_for_experience",
+      "line_number": 979,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "len",
+        "isinstance",
+        "enumerate",
+        "HopExecutionError",
+        "str",
+        "hasattr",
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "copy": [
+      "line_5"
+    ],
+    "functools": [
+      "line_6"
+    ],
+    "hashlib": [
+      "line_7"
+    ],
+    "json": [
+      "line_8"
+    ],
+    "logging": [
+      "line_9"
+    ],
+    "os": [
+      "line_10"
+    ],
+    "random": [
+      "line_11"
+    ],
+    "re": [
+      "line_12"
+    ],
+    "time": [
+      "line_13"
+    ],
+    "from_datetime": [
+      "line_14"
+    ],
+    "from_typing": [
+      "line_15"
+    ],
+    "from_collections": [
+      "line_16"
+    ],
+    "google.generativeai": [
+      "line_18"
+    ],
+    "from_models_RES": [
+      "line_20"
+    ],
+    "from_gemini_service": [
+      "line_24"
+    ],
+    "from_config_RES_v2": [
+      "line_26"
+    ],
+    "from_utils_RES_v2": [
+      "line_33"
+    ],
+    "from_interpreter_RES_v2": [
+      "line_38"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "generate_section": "generate_section",
+    "_convert_config_keys_to_enums": "_convert_config_keys_to_enums",
+    "_parse_specs": "_parse_specs",
+    "_mechanical_word_count_fix": "_mechanical_word_count_fix",
+    "_pre_flight_constraint_test": "_pre_flight_constraint_test",
+    "generate": "generate",
+    "_generate_artist_output": "_generate_artist_output",
+    "_post_process_narrative": "_post_process_narrative",
+    "_get_reasoning_config_for_section": "_get_reasoning_config_for_section",
+    "_get_overview_wc_range": "_get_overview_wc_range",
+    "_get_expected_signature": "_get_expected_signature",
+    "_get_experience_snippets_for_cl": "_get_experience_snippets_for_cl",
+    "_generate_tailored_overview_for_experience": "_generate_tailored_overview_for_experience",
+    "_validate_llm_bullet_selection": "_validate_llm_bullet_selection",
+    "_rewrite_bullet_for_word_count": "_rewrite_bullet_for_word_count",
+    "_validate_and_potentially_rewrite_bullets": "_validate_and_potentially_rewrite_bullets",
+    "_generate_lightly_customized_bullets": "_generate_lightly_customized_bullets",
+    "_generate_synthetic_bullets": "_generate_synthetic_bullets",
+    "_generate_tailored_bullets_for_experience": "_generate_tailored_bullets_for_experience"
+  },
+  "class_signatures": {
+    "ArtistGenerator": "ArtistGenerator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 137,
+    "cognitive_complexity": 104,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}
