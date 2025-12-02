@@ -1,0 +1,8 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='error')],
+        values=[
+          Constant(value='invalid syntax (<unknown>, line 1)')]))])

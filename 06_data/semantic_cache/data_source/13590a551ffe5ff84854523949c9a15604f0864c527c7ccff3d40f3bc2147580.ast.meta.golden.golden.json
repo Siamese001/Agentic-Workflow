@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_7_main\\\\\\\\tests\\\\\\\\v10_7\\\\\\\\test_flat__rag__test_rag_invariants_v10_7.py\\\",\\n  \\\"file_hash\\\": \\\"13590a551ffe5ff84854523949c9a15604f0864c527c7ccff3d40f3bc2147580\\\",\\n  \\\"size_bytes\\\": 8313,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:41.516831\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_7_main\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"30ad3dcceacc4b31cfe8ca3c6e28e2e3f49520082699b5a8f57ff4272c25560b\",\n  \"generated_at\": 1764702806.945305,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_7_main\\\\13590a551ffe5ff84854523949c9a15604f0864c527c7ccff3d40f3bc2147580.ast.meta.json\"\n}",
+  "full_hash": "5cfc076303f69321e06ee0d3b4b22bb79a228ed837accc855fa2e15f01b2d48e",
+  "generated_at": 1764703184.7131555,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\13590a551ffe5ff84854523949c9a15604f0864c527c7ccff3d40f3bc2147580.ast.meta.golden.json"
+}

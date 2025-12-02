@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 9,
+  "generated_at": 1764703808.6642723,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\15fca3cfffed2a9f0e9314f4992e741a0d308ddbf641fa572bbe7859701bfba6.ast.meta.json"
+}

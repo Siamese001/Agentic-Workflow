@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\107314a993d6225db09563795fad385c87899ee369140300199f420a492e51af.embedding.meta.meta.json",
+    "rel_path": "107314a993d6225db09563795fad385c87899ee369140300199f420a492e51af.embedding.meta.meta.json",
+    "root_name": "data_source",
+    "file_hash": "261c1f2dc3f0037d4b14ddddf59807aeead08999982fb87dddfe4c7801feb830",
+    "file_size": 695,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703181.8534508
+}

@@ -1,0 +1,10 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='model'),
+          Constant(value='dimensions')],
+        values=[
+          Constant(value='text-embedding-ada-002'),
+          Constant(value=16)]))])

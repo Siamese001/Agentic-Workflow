@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='24c2630514e23137603f7ec5cca858744946aa7db4502dd9593eda4cd1bf6208'),
+          Constant(value=1832),
+          Constant(value=1764702987.3501446),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\10_7 consolidation mapping.md'),
+          Name(id='true', ctx=Load())]))])

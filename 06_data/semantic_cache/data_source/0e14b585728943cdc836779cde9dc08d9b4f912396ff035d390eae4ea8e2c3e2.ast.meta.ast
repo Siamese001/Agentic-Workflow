@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__integration__test_perf_latency_v10_7.py'),
+          Constant(value='0e14b585728943cdc836779cde9dc08d9b4f912396ff035d390eae4ea8e2c3e2'),
+          Constant(value=2169),
+          Constant(value='2025-12-01T12:27:41.622724'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_7_main'),
+          Constant(value='.py')]))])

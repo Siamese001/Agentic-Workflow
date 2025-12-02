@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='"""\nL2 safety execution for resume compliance and protection workflows.\nExecutes comprehensive safety validation to ensure resume content\nmeets security standards for job alignment.\n"""\nfrom typing import Optional\nfrom runtime.runtime_utils import invoke_model, SandboxConfig\nfrom core.routing import RoutingPolicy\nfrom core.models.models import ComplexityLevel\nfrom config.meta_profile import MetaProfileSnapshot\nfrom runtime.observability import record_event, record_exception\nclass SafetyExecutor:\n"""\nExecutes resume safety validation with optimal model selection.\nProtects user data and ensures compliance for reliable resume\nprocessing workflows and job alignment.\n"""\ndef __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):\nself.routing_policy = routing_policy\nself.sandbox = sandbox\nself.meta_profile = meta_profile\ndef execute_safety(self, prompt: str) -> str:\n"""\nExecutes resume safety validation using LLM models.\nEnsures content compliance and protection for secure resume\nimprovement processes and job alignment.\n"""\ntry:\nmodel = self.routing_policy.select_model(\ntask="safety_execution",\ncomplexity=ComplexityLevel.MEDIUM,\nmeta_profile=self.meta_profile,\n)\nrecord_event("safety_execution_start", {"task": "safety_execution"})\nresult = invoke_model(\nmodel=model,\nprompt=prompt,\nsandbox=self.sandbox,\n)\nrecord_event("safety_execution_success", {"result_length": len(result)})\nreturn result\nexcept Exception as exc:\nrecord_exception("safety_execution_failure", exc)\nraise'),
+          Constant(value='func:__init__;func:execute_safety;class:SafetyExecutor'),
+          Constant(value='object_oriented_with_methods'),
+          Constant(value='public_methods:execute_safety'),
+          List(ctx=Load())]))])

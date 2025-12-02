@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='word_count'),
+          Constant(value='unique_words'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=14),
+          Constant(value=12),
+          Constant(value=1764702791.2937157),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91.safety.json')]))])

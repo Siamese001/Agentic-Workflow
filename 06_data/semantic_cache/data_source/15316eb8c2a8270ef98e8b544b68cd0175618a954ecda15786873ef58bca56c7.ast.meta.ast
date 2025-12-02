@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_meta_retrieval_orchestrator.py'),
+          Constant(value='15316eb8c2a8270ef98e8b544b68cd0175618a954ecda15786873ef58bca56c7'),
+          Constant(value=10415),
+          Constant(value='2025-12-01T12:27:39.826352'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_11'),
+          Constant(value='.py')]))])

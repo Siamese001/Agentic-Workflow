@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "file_path": "C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_7_main\\\\pydantic\\\\__init__.py",\n  "file_hash": "14d8a7cd230b2a6135e4efe1c1f41ad786cf9de8f708974ee1dc2846bb0852af",\n  "size_bytes": 103,\n  "last_modified": "2025-12-01T12:27:41.935170",\n  "engine": "RG",\n  "archive_version": "Agentic-Workflow-10_7_main",\n  "file_extension": ".py"\n}'),
+          Constant(value='fff5ee1c45e33e614a6318561a75a0887e07973852aeb5b98bcb538931bb5372'),
+          Constant(value=1764702807.0435538),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_7_main\\14d8a7cd230b2a6135e4efe1c1f41ad786cf9de8f708974ee1dc2846bb0852af.ast.meta.json')]))])

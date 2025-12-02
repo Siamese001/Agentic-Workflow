@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"word_count\": 18,\n  \"unique_words\": 18,\n  \"generated_at\": 1764702791.4410036,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632.ast.meta.json\"\n}",
+  "full_hash": "677ae49e47018f2b62ffa9ec7ca3a2a143cbe3dbeffa76d87c327bb40d9b648c",
+  "generated_at": 1764703188.373693,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632.ast.meta.embedding.meta.json"
+}

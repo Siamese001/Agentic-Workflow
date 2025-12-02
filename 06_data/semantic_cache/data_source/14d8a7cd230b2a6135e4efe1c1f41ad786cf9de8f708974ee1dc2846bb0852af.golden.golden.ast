@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "canonical_form": "\\"\\"\\"Local stub shim for pydantic imports in tests.\\"\\"\\"\\nfrom vendor.pydantic import * # noqa: F401,F403",\n  "normalized_signature": "",\n  "core_functionality": "module_imports",\n  "interface_contract": "public_methods:",\n  "test_coverage": [\n    "contains_tests"\n  ]\n}'),
+          Constant(value='110fd192ccbf494ce36dcb6d56afc292227a34514616acbe8fba66fda0b460f7'),
+          Constant(value=1764702807.0677793),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_7_main\\14d8a7cd230b2a6135e4efe1c1f41ad786cf9de8f708974ee1dc2846bb0852af.golden.json')]))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"canonical_form\\\": \\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\nResume Generation Engine v14.36\\\\nAPI Client Initialization Fix: Proper Error Handling for Failed Gemini Client\\\\nThis version fixes an AttributeError where code attempted to call methods on a None\\\\nGeminiWebSearchClient. The issue occurred when the GenerativeModel initialization\\\\nfailed but the exception was caught and self.client was set to None, allowing the\\\\nobject to be created in a broken state.\\\\nKey Changes from v14.35:\\\\n1. Fixed GeminiWebSearchClient.__init__ to raise exception instead of continuing\\\\n- Changed line 1698 from setting self.client = None to re-raising exception\\\\n- Ensures failed initialization prevents object creation\\\\n- Prevents downstream AttributeError: 'NoneType' object has no attribute 'search_and_analyze'\\\\n2. This allows the proper exception handling in EnhancedJobDescriptionAnalyzer\\\\nto catch the failure and set self.gemini_client = None appropriately\\\\nThe issue manifested as:\\\\nAtt",
+  "full_hash": "42966abd570dd35ab413f9e39265a92af91403a77de0c32d8a2509caefaa39e5",
+  "generated_at": 1764703178.4902995,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0d027c57326b804174ef694a7ea12b7333e1ad24262e9ac0f4dcfb298b8fd3cf.golden.golden.json"
+}

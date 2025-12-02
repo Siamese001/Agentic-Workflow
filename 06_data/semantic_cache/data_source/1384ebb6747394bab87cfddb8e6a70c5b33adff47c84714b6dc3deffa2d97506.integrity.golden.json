@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_hash\": \"4005d595aea8a0f450c41d9992b39cae192e34455e38035a37b7f3dd127a3034\",\n  \"file_size\": 532,\n  \"generated_at\": 1764702818.8817582,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Old Resume Gen Python\\\\1384ebb6747394bab87cfddb8e6a70c5b33adff47c84714b6dc3deffa2d97506.embedding\",\n  \"verified\": true\n}",
+  "full_hash": "b7301238975f65b1ed7daf0cb6ecdcf69544de0e1324147da77d5ea230203043",
+  "generated_at": 1764703186.1798573,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\1384ebb6747394bab87cfddb8e6a70c5b33adff47c84714b6dc3deffa2d97506.integrity.json"
+}

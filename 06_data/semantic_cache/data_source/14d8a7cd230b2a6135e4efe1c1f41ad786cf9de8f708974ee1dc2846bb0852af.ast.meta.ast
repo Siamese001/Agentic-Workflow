@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\pydantic\\__init__.py'),
+          Constant(value='14d8a7cd230b2a6135e4efe1c1f41ad786cf9de8f708974ee1dc2846bb0852af'),
+          Constant(value=103),
+          Constant(value='2025-12-01T12:27:41.935170'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_7_main'),
+          Constant(value='.py')]))])

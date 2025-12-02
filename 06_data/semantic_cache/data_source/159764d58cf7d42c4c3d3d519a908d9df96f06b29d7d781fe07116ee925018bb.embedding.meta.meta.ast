@@ -1,0 +1,44 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_info'),
+          Constant(value='artifact_counts'),
+          Constant(value='generated_at')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='abs_path'),
+              Constant(value='rel_path'),
+              Constant(value='root_name'),
+              Constant(value='file_hash'),
+              Constant(value='file_size'),
+              Constant(value='is_eligible'),
+              Constant(value='file_type'),
+              Constant(value='depth')],
+            values=[
+              Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\159764d58cf7d42c4c3d3d519a908d9df96f06b29d7d781fe07116ee925018bb.embedding.meta.json'),
+              Constant(value='159764d58cf7d42c4c3d3d519a908d9df96f06b29d7d781fe07116ee925018bb.embedding.meta.json'),
+              Constant(value='data_source'),
+              Constant(value='c364dfbe775b2e09f86fa772bbf465d7e67cf9d51954e770115bacdcd672fbc6'),
+              Constant(value=62),
+              Name(id='true', ctx=Load()),
+              Constant(value='.json'),
+              Constant(value=3)]),
+          Dict(
+            keys=[
+              Constant(value='ast'),
+              Constant(value='embedding'),
+              Constant(value='diff'),
+              Constant(value='golden'),
+              Constant(value='safety'),
+              Constant(value='integrity')],
+            values=[
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1)]),
+          Constant(value=1764702819.1561377)]))])

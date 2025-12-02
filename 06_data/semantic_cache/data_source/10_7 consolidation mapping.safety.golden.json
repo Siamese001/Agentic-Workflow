@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"has_executable_calls\": false,\n  \"has_file_operations\": false,\n  \"has_network_calls\": false,\n  \"has_system_calls\": false,\n  \"line_count\": 7,\n  \"generated_at\": 1764702987.3495443,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_7_main\\\\10_7 consolidation mapping.md\"\n}",
+  "full_hash": "cc8b83e679cc537592cc31d5eaac83884caa1291669c58533b5a5f4c450422c4",
+  "generated_at": 1764703738.0183156,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_7_main\\10_7 consolidation mapping.safety.json"
+}

@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\prompt_system_v10_10.py'),
+          Constant(value='132558a9611bb1c36bbab945a19f2074e68e8caf2d46e4c436e1b746aba4e354'),
+          Constant(value=9546),
+          Constant(value='2025-12-01T15:36:20.795773'),
+          Constant(value='RG'),
+          Constant(value='Agentic_Workflow-10_10'),
+          Constant(value='.py')]))])

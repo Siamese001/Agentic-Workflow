@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "file_path": "C:\\\\Git\\\\Resume Engine Archive\\\\v10.7\\\\Agentic-Workflow\\\\core_v10_7\\\\clients.py",\n  "file_hash": "0fa41f6dbdfc9219753bcc1a8ce4be0e1dcf39a367cae420eccba70ddd650c25",\n  "size_bytes": 10763,\n  "last_modified": "2025-12-01T12:27:37.419184",\n  "engine": "RG",\n  "archive_version": "v10.7",\n  "file_extension": ".py"\n}'),
+          Constant(value='acca4b7bdf363abd340e123d479593a3322b6976bc0ebb48f30c502ce1ed05cb'),
+          Constant(value=1764702841.0048244),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\0fa41f6dbdfc9219753bcc1a8ce4be0e1dcf39a367cae420eccba70ddd650c25.ast.meta.json')]))])

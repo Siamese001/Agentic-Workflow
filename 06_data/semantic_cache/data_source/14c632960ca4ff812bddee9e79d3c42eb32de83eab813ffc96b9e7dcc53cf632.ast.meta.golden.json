@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\tests\\\\golden\\\\test_scoring_harness.py\",\n  \"file_hash\": \"14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632\",\n  \"size_bytes\": 45851,\n  \"last_modified\": \"2025-12-01T12:27:39.529491\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_11\",\n  \"file_extension\": \".py\"\n}",
+  "full_hash": "345f1a6949b5eb00139f5423f129986d6116ed1e21ebbecab214fc0776e16d44",
+  "generated_at": 1764703655.3059087,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632.ast.meta.json"
+}

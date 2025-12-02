@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\v2\\config_RES_v2.py'),
+          Constant(value='107314a993d6225db09563795fad385c87899ee369140300199f420a492e51af'),
+          Constant(value=23380),
+          Constant(value='2025-12-01T12:27:36.981682'),
+          Constant(value='RG'),
+          Constant(value='v2'),
+          Constant(value='.py')]))])

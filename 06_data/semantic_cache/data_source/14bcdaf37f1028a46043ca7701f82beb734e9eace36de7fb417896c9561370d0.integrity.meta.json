@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\14bcdaf37f1028a46043ca7701f82beb734e9eace36de7fb417896c9561370d0.integrity.json",
+    "rel_path": "14bcdaf37f1028a46043ca7701f82beb734e9eace36de7fb417896c9561370d0.integrity.json",
+    "root_name": "data_source",
+    "file_hash": "c1fed7c0cce8609cc5035cfe92e70404e4d495f1b22da0dc3b21c599d1644c4e",
+    "file_size": 352,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 2
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703188.250364
+}

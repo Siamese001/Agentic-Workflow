@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_11\\\\\\\\providers\\\\\\\\chromadb_client.py\\\",\\n  \\\"file_hash\\\": \\\"130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91\\\",\\n  \\\"size_bytes\\\": 2581,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:38.130562\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_11\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"8f638f693ed47ad242217bee5b2e129e6ea17b28ec9a1a308a20a8dfdb4a26c2\",\n  \"generated_at\": 1764702791.2642207,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91.ast.meta.json\"\n}",
+  "full_hash": "108903d100802490894e904ff405e99bae10c52a7ac0e8a0361df577113ac4ce",
+  "generated_at": 1764703183.4224894,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91.ast.meta.golden.json"
+}

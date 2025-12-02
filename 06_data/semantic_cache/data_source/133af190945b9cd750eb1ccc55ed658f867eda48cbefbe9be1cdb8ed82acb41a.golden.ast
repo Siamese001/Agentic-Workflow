@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='"""\nPinned context management for résumé processing workflows.\nManages essential context items that ensure consistent résumé improvement prompt generation.\n"""\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n@dataclass\nclass PinnedItem:\n"""\nRepresents pinned context item for résumé processing.\nEnsures critical information is always included in résumé improvement workflows.\n"""\nid: str\ntext: str\nmetadata: Dict[str, Any]\ndef filter_pinned(items: List[PinnedItem], max_items: int) -> List[PinnedItem]:\n"""\nFilters pinned context items for résumé processing workflows.\nEnsures optimal selection of essential information for résumé improvement operations.\n"""\nif max_items <= 0:\nreturn []\nreturn items[:max_items]'),
+          Constant(value='func:filter_pinned;class:PinnedItem'),
+          Constant(value='object_oriented_with_methods'),
+          Constant(value='public_methods:filter_pinned'),
+          List(ctx=Load())]))])

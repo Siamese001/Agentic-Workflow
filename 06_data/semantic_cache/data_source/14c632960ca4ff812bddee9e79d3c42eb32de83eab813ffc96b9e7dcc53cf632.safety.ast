@@ -1,0 +1,22 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='safety_checks'),
+          Constant(value='policy_compliance'),
+          Constant(value='security_patterns'),
+          Constant(value='data_handling'),
+          Constant(value='access_controls')],
+        values=[
+          List(
+            elts=[
+              Constant(value='input_validation')],
+            ctx=Load()),
+          List(ctx=Load()),
+          List(ctx=Load()),
+          List(
+            elts=[
+              Constant(value='sensitive_data')],
+            ctx=Load()),
+          List(ctx=Load())]))])

@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "canonical_form": "\\"\\"\\"\\nControl plane decision logic for r\\u00e9sum\\u00e9 processing safety enforcement.\\nProvides rule evaluation and verdict aggregation for comprehensive r\\u00e9sum\\u00e9 improvement workflows.\\n\\"\\"\\"\\nfrom typing import Any, Dict, List, Optional, Literal\\nfrom pydantic import BaseModel, Field\\nfrom .models import PolicyRule\\nclass RuleMatch(BaseModel):\\n\\"\\"\\"\\nRepresents policy rule match for r\\u00e9sum\\u00e9 processing safety evaluation.\\nEnables systematic safety assessment for comprehensive r\\u00e9sum\\u00e9 enhancement operations.\\n\\"\\"\\"\\nrule_id: str\\ncategory: str\\nseverity: str\\nis_pii: bool = False\\ndetails: Dict[str, Any] = Field(default_factory=dict)\\nclass RulesEngineResult(BaseModel):\\n\\"\\"\\"\\nAggregates rule evaluation results for r\\u00e9sum\\u00e9 processing safety decisions.\\nProvides comprehensive safety assessment for r\\u00e9sum\\u00e9 improvement workflows.\\n\\"\\"\\"\\nmatches: List[RuleMatch] = Field(default_factory=list)\\nmax_severity: Option'),
+          Constant(value='8271ee2b89c04ad71b639d9f00478be0fa5d6a71def9a086b743db27d89b6572'),
+          Constant(value=1764702791.013029),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\0f5653daa57b77ab962c15dd96ca07c84e17bb3fe92cbf29b34658cd6ba1f5fe.golden.json')]))])

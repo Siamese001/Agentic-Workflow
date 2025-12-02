@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "safety_checks": [\n    "input_validation"\n  ],\n  "policy_compliance": [],\n  "security_patterns": [\n    "cryptography"\n  ],\n  "data_handling": [],\n  "access_controls": [\n    "rbac"\n  ]\n}'),
+          Constant(value='cfd5c36b88eda6c12233ffd3ea8bb43ceed70b59103404c03805da12f352d628'),
+          Constant(value=1764702841.0465012),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\0fa41f6dbdfc9219753bcc1a8ce4be0e1dcf39a367cae420eccba70ddd650c25.safety.json')]))])

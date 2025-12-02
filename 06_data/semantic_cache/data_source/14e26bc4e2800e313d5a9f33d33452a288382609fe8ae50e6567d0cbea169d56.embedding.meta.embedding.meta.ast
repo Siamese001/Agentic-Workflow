@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='word_count'),
+          Constant(value='unique_words'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=6),
+          Constant(value=6),
+          Constant(value=1764702819.0661504),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56.embedding.meta.json')]))])

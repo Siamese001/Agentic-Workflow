@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden\\test_scoring_harness.py'),
+          Constant(value='14c632960ca4ff812bddee9e79d3c42eb32de83eab813ffc96b9e7dcc53cf632'),
+          Constant(value=45851),
+          Constant(value='2025-12-01T12:27:39.529491'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_11'),
+          Constant(value='.py')]))])

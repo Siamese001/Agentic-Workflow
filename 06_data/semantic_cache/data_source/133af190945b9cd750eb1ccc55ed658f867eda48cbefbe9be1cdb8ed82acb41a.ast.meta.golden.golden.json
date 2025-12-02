@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_11\\\\\\\\infra\\\\\\\\context_engine\\\\\\\\pinned.py\\\",\\n  \\\"file_hash\\\": \\\"133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a\\\",\\n  \\\"size_bytes\\\": 853,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:38.654159\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_11\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"e8c061cad9e0e7cb019e6d6590837ae66b7a6b42dd53789bb4f2f526d45bab58\",\n  \"generated_at\": 1764702791.3100533,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a.ast.meta.json\"\n}",
+  "full_hash": "07f5b1a0282c282830899650d999b298f7c1362bb8b7a99361661452749b75cb",
+  "generated_at": 1764703184.301378,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a.ast.meta.golden.json"
+}

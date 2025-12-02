@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='has_executable_calls'),
+          Constant(value='has_file_operations'),
+          Constant(value='has_network_calls'),
+          Constant(value='has_system_calls'),
+          Constant(value='line_count'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Name(id='false', ctx=Load()),
+          Name(id='false', ctx=Load()),
+          Name(id='false', ctx=Load()),
+          Name(id='false', ctx=Load()),
+          Constant(value=9),
+          Constant(value=1764702791.3550544),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764.ast.meta.json')]))])

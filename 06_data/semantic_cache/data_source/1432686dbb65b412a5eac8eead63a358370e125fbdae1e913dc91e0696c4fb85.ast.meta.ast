@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\shared\\fixtures.py'),
+          Constant(value='1432686dbb65b412a5eac8eead63a358370e125fbdae1e913dc91e0696c4fb85'),
+          Constant(value=14524),
+          Constant(value='2025-12-01T12:27:41.931373'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_7_main'),
+          Constant(value='.py')]))])

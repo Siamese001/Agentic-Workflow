@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_7_main\\10_7 consolidation mapping.safety.json",
+    "rel_path": "10_7 consolidation mapping.safety.json",
+    "root_name": "data_source",
+    "file_hash": "722078bf36a73e97c9d16e8228102e68041bb2127faf2609c778bab9c32f540b",
+    "file_size": 301,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703738.0211294
+}
